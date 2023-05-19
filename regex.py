@@ -199,7 +199,7 @@ class AOERegex():
     ]))
 
     self.civ_posession_matches = list(map(re.compile, [
-      f'((D|d)o(es)? )?(?P<civilization_name>{self.civ_name_match}) (get(s)?|have) (?P<subject>{self.entities_match})',
+      f'((D|d)o(es)? )?(?P<civilization_name>{self.civ_name_match}) (get(s)?|have|has) (?P<subject>{self.entities_match})',
     ]))
 
     self.info_matches = list(map(re.compile, [
@@ -210,7 +210,7 @@ class AOERegex():
     ]))
 
     self.unique_tech_match = list(map(re.compile, [
-      f'((W|w)hat (is|are) )?(?P<civilization_name>{self.civ_name_match})((\')?s)? ((?P<age>(C|c)astle|(I|i)mperial) (age )?)? (unique tech|UT|ut)s?',
+      f'((W|w)hat (is|are) )?(?P<civilization_name>{self.civ_name_match})((\')?s)? ((?P<age>(C|c)astle|(I|i)mperial) (age )?)?(unique tech((nologie|nology)?)|UT|ut)s?',
     ]))
 
     self.unique_unit_match = list(map(re.compile, [
@@ -218,10 +218,12 @@ class AOERegex():
     ]))
 
     self.entity_possession_match = list(map(re.compile, [
-      f'(((W|w)h(at|ich) )?((is|are) )?)?((T|t)he )?(C|c)ivilizations (that )?(get|have) (?P<subject>{self.entities_match})',
+      f'(((W|w)h(at|ich) )?((is|are) )?)?((T|t)he )?(C|c)iv(ilization)?s? ((that )?(get|have)|with) (?P<subject>{self.entities_match})',
     ]))
-    # TODO which civs get X
-  
+
+  # This vs. that
+
+
   def getMatchEntity(self, match):
     subject = match.group('subject')
     real_entity_name = self.synonyms.get(subject, subject).lower()
@@ -282,4 +284,5 @@ class AOERegex():
     m = re.findall(self.weak_entities_match, s)
     es = [list(filter(lambda en : len(en) > 1, list(ms))) for ms in m]
     flat = [helpers.toTitleCase(e) for ls in es for e in ls]
-    return flat
+    unique_entities = list(set(flat))
+    return unique_entities

@@ -17,9 +17,11 @@ class AOEData():
     strings_file = open(strings_filename)
     data_file = open(data_filename)
     id_description_map = json.load(strings_file)
+    self.string_data = copy.deepcopy(id_description_map)
     _game_data_file = json.load(data_file)
     name_info_map = {}
     # This is the mapping from unit/building identifiers to their number/key
+    
     new_game_data = copy.deepcopy(_game_data_file)
     
     temp_data = _game_data_file["data"]
@@ -168,27 +170,16 @@ class AOEData():
       answer += f'{bonus}\n'
       # entity_match = re.search(entities_string)
     return answer
-
+  
   def getTechInfoString(self, entity):
-    info = entity["info"]
-    answer = f'{entity["description"]}\n\n' \
-            f'HP:             {info["HP"]}\n' \
-            f'Melee Armor:    {info["MeleeArmor"]}\n' \
-            f'Pierce Armor:   {info["PierceArmor"]}\n' \
-            f'Attack:         {info["Attack"]}\n' \
-            f'Range:          {info["Range"]}\n' \
-            f'Accuracy:       {info["AccuracyPercent"]}%\n' \
-            f'LOS:            {info["LineOfSight"]}\n' \
-            f'Garrison Capac: {info["GarrisonCapacity"]}\n' \
-            f'Train Time:     {info["TrainTime"]}\n' \
-            f'Reload Time:    {info["ReloadTime"]}\n'
+    answer = f'{self.getEntitityDescriptionString(entity)}\n\n' \
+              f'{self.getEntityCostString(entity)}\n'
     return answer
 
   def getEntitityDescriptionString(self, entity):
-    return entity["description"]
+    return f'{entity["name"]}\n{entity["description"]}'
 
   def getEntitityInfoString(self, entity):
-    # TODO figure out to properly parse the description text
     answer = ""
     if (entity["category"] == ENTITY_CATEGORIES["CIVILIZATION"]): 
       answer += self.getCivInfoString(entity)
@@ -196,9 +187,8 @@ class AOEData():
       answer += self.getBuildingInfoString(entity)
     elif (entity["category"] == ENTITY_CATEGORIES["UNIT"]): 
       answer += self.getUnitInfoString(entity)
-    else:
-      answer += f'{self.getEntitityDescriptionString(entity)}\n\n' \
-                f'{self.getEntityCostString(entity)}\n'
+    elif entity["techs"]:
+      answer += self.getTechInfoString(entity)
     return answer
 
   def getPosessionInfoString(self, _civ_name:str, entity_name:str):
@@ -214,6 +204,8 @@ class AOEData():
   def getEntityPossessionString(self, entity_name):
     entity = self.getEntityInfoByName(entity_name)
     civs = entity.get("civilizations_access", None)
+    if not civs:
+      return 'I\'m sorry I had trouble answering that question'
     if len(civs) == 1:
       return f'Only {civs[0]} get {entity["name"]}'
     
@@ -227,8 +219,73 @@ class AOEData():
     
     return entity.get("civilizations_access", None)
   
-  def getCivUniqueTechString(self, civ, age=None):
-    return ''
+  def getTechName(self, id):
+    tech_info_name_id = self.game_data["data"]["techs"][str(id)]["LanguageNameId"]
+    tech_name = self.string_data[str(tech_info_name_id)]
+    return tech_name  
+
+  def getCastleAgeTechString(self, civ:str):
+    civTitleCase = helpers.toTitleCase(civ)
+    uniqueData = self.game_data["techtrees"][civTitleCase]["unique"]
+    techId = uniqueData["castleAgeUniqueTech"]
+    uniqueTechName = self.getTechName(techId)
+    techEntity = self.getEntityInfoByName(uniqueTechName)
+    return (uniqueTechName, self.getTechInfoString(techEntity))
+  
+  def getImperialAgeTechString(self, civ:str):
+    civTitleCase = helpers.toTitleCase(civ)
+    uniqueData = self.game_data["techtrees"][civTitleCase]["unique"]
+    techId = uniqueData["imperialAgeUniqueTech"]
+    uniqueTechName = self.getTechName(techId)
+    techEntity = self.getEntityInfoByName(uniqueTechName)
+    return (uniqueTechName, self.getTechInfoString(techEntity))
+  
+  def getCivUniqueTechString(self, civ:str, age=None):
+    civTitleCase = helpers.toTitleCase(civ)
+    title = ''
+    answer = ''
+    if not age:
+      (castleUniqueTechName, castleDescription) = self.getCastleAgeTechString(civ)
+      (imperialUniqueTechName, imperialDescription) = self.getImperialAgeTechString(civ)
+
+      title = f'{civTitleCase} unique techs are {castleUniqueTechName} and {imperialUniqueTechName}\n'
+      
+      answer += f'Castle Age Unique Tech:\n' \
+                f'{castleDescription}\n' \
+                f'Imperial Age Unique Tech:\n' \
+                f'{imperialDescription}'
+    elif age.lower() == 'castle':
+      (uniqueTechName, description) = self.getCastleAgeTechString(civ)
+      title = f'{civTitleCase} Castle Age unique tech is {uniqueTechName}\n'
+      answer += description
+    
+    elif age.lower() == 'imperial':
+      (uniqueTechName, description) = self.getImperialAgeTechString(civ)
+      title = f'{civTitleCase} Imperial Age unique tech is {uniqueTechName}\n'
+      answer += description
+    
+    return title + answer
+  
+  def getUnitNameString(self, id):
+    nameId = self.game_data["data"]["units"][str(id)]["LanguageNameId"]
+    return self.string_data[str(nameId)]
   
   def getCivUniqueUnitString(self, civ):
-    return ''
+    civTitleCase = helpers.toTitleCase(civ)
+    uniqueData = self.game_data["techtrees"][civTitleCase]["unique"]
+    
+    castleId = uniqueData["castleAgeUniqueUnit"]
+    castleUnitName = self.getUnitNameString(castleId)
+    castleEntity = self.getEntityInfoByName(castleUnitName)
+    castleUnitDescription = self.getUnitInfoString(castleEntity)
+    
+    imperialId = uniqueData["imperialAgeUniqueUnit"]
+    imperialUnitName = self.getUnitNameString(imperialId)
+    imperialEntity = self.getEntityInfoByName(imperialUnitName)
+    imperialUnitDescription = self.getUnitInfoString(imperialEntity)
+
+    answer = f'{civTitleCase} Unique Unit from the Castle is {castleUnitName}\n' \
+             f'{castleUnitDescription}\n' \
+             f'{imperialUnitDescription}'
+    
+    return answer

@@ -3,7 +3,7 @@ from chatbot import AOEChatBot
 
 from constants import API_PREFIX
 
-def create_app(string_filename="strings.json", data_filename="data.json"):
+def create_app(string_filename="data/strings.json", data_filename="data/data.json"):
    
   app = Flask(__name__)
 
