@@ -2,7 +2,6 @@ from constants import QUESTION_TYPES, ENTITY_CATEGORIES
 from regex import AOERegex
 from aoeData import AOEData
 
-# TODO Unique techs parsing
 # TODO map armor class IDs to strings
 class AOEChatBot:
   aoeData = None
@@ -15,6 +14,8 @@ class AOEChatBot:
     (question, question_type) = parsed_question
     response = ""
     entity_names = []
+    entity = None
+    civs_with_entity = []
     intent = question_type
     if question_type == QUESTION_TYPES["COST"]:
       (entity) = question
@@ -32,15 +33,18 @@ class AOEChatBot:
       entity_names = [civ, entity]
     if question_type == QUESTION_TYPES["UNIQUE_UNIT"]:
       (civ) = question
-      
+      response = self.aoeData.getCivUniqueUnitString(civ)
+      entity_names = [civ]
     if question_type == QUESTION_TYPES["UNIQUE_TECH"]:
       (civ, age) = question
-      
+      response = self.aoeData.getCivUniqueTechString(civ, age)
+      entity_names = [civ]
     if question_type == QUESTION_TYPES["ENTITY_POSSESSION"]:
       (entity) = question
       response = self.aoeData.getEntityPossessionString(entity)
       entity_names = [entity]
-    civs_with_entity = self.aoeData.getCivsWithEntity(entity)
+    if entity:
+      civs_with_entity = self.aoeData.getCivsWithEntity(entity)
     return {
         "response": response,
         "civilization_access": civs_with_entity,
@@ -57,6 +61,9 @@ class AOEChatBot:
         answer["related_entities"] = related_entities_from_answer
       return answer
     response = "Sorry, I don't understand that, please try again."
+    # TODO Log unknown questions
+    # TODO spam filter
+    # TODO rate limiter
     return {
       "answer": response,
       "entities": [],
