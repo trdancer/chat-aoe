@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&family=Aoboshi+One&display=swap');
+body {
+  background-color: #ffd2a9;
+  font-family: 'Noto Sans', sans-serif;
+}
+button {
+  margin: 0.3rem;
+  padding: 0.6rem 0.9rem;
+  background-color: #885c33;
+  color: white;
+  border: none;
+  box-shadow: 0 0 4px #00000011;
+  transition: box-shadow 0.2s ease-in, background-color 0.2s ease-in;
+  font-family: inherit;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: #624224;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Aoboshi One', serif;
+}
+#app {
+  max-width: 50vw;
+  margin: 0 auto;
+  padding: 2rem;
+  font-weight: normal;
+}
+
+.no-link-deco {
+  text-decoration: none;
+  color: black;
+}
+
+.align-horizontal {
+  display: flex;
+  align-items: center;
+}
+
+.dialog-box {
+  padding: 1rem;
+  margin-bottom: 5px;
+  background-color: rgba(255, 255, 255, 0.699);
+  border: outset 4px #dc9553;
+}
+.time {
+  font-size: 0.8rem;
+  margin: 6px 0;
+}
+.response {
+  margin-top: 3px;
+  margin-bottom: 6px;
+}
+.chat-header {
+  margin: 4px 0;
+}
+/* TODO get animations to work */
+.dialog-animation-enter-active {
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+.dialog-animation-enter-from {
+  opacity: 0;
+  transform: translateY(-50px);
+}
+.dialog-animation-enter-to {
+  opacity: 1;
+  transform: none;
+}
