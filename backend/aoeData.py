@@ -187,7 +187,7 @@ class AOEData():
       answer += self.getBuildingInfoString(entity)
     elif (entity["category"] == ENTITY_CATEGORIES["UNIT"]): 
       answer += self.getUnitInfoString(entity)
-    elif entity["techs"]:
+    elif (entity["category"] == ENTITY_CATEGORIES["TECH"]):
       answer += self.getTechInfoString(entity)
     return answer
 
@@ -209,9 +209,10 @@ class AOEData():
     if len(civs) == 1:
       return f'Only {civs[0]} get {entity["name"]}'
     
-    answer = f'The following civilizations get {entity["name"]}:'
-    for c in civs:
-      answer += f'\n\t{c}'
+    answer = f'The following civilizations get {entity["name"]}: '
+    answer += ", ".join(civs)
+    # for c in civs:
+    #   answer += f'\n\t{c},'
     return answer
 
   def getCivsWithEntity(self, entity_name):
@@ -284,8 +285,22 @@ class AOEData():
     imperialEntity = self.getEntityInfoByName(imperialUnitName)
     imperialUnitDescription = self.getUnitInfoString(imperialEntity)
 
-    answer = f'{civTitleCase} Unique Unit from the Castle is {castleUnitName}\n' \
+    answer = f'{civTitleCase} Unique Unit from the Castle is the {castleUnitName}\n' \
              f'{castleUnitDescription}\n' \
              f'{imperialUnitDescription}'
     
     return answer
+  
+  def getRelatedEntities(self, entities):
+    newEntities = []
+    for e in entities:
+      try:
+        full_entity = self.getEntityInfoByName(e)
+        small_entity = {
+          "name": full_entity["name"],
+          "category": full_entity["category"],
+        }
+        newEntities.append(small_entity)
+      except:
+        continue
+    return newEntities

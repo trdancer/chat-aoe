@@ -16,7 +16,7 @@ const submitQuestion = () => {
 <template>
   <div id="query-container" >
 
-    <textarea v-model="userQuery" @keyup.enter="submitQuestion" placeholder="Enter your question here" id="query-box" >
+    <textarea v-model="userQuery" @keyup.enter="submitQuestion" placeholder="What would you like to know?" id="query-box" >
     </textarea>
     <button class="submit-button" @click="submitQuestion" :disabled="buttonDisabled">
       Go

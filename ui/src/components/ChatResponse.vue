@@ -1,29 +1,46 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { CIVILIZATIONS, formatTimestamp } from '@/helpers/constants';
-import type { ChatResponse } from '@/types';
+import { CIVILIZATIONS, ENTITY_TYPES, formatTimestamp, makeQuestion } from '@/helpers/constants';
+import { QuestionIntent, type ChatResponse } from '@/types';
 import Tag from './Tag.vue';
 const props = defineProps<ChatResponse>()
 const showAll = ref(false)
 const relatedQuestions = ref(
-  props.related_entities?.map((e) => {
-    if (!CIVILIZATIONS.has(e)) {
-      const r = Math.floor(Math.random()*3 % 3)
-      switch (r) {
-        case 0: return `How much does ${e} cost?`
-        case 1: return `Tell me about ${e}.`
-        case 2: return `Which civilizations get ${e}?`
-        default: `Tell me about ${e}`
-      }
-    } else {
-      const r2 = Math.floor(Math.random()*2 % 2)
-      switch (r2) {
-        case 0: return `What are ${e}'s unique technologies?`
-        case 1: return `What is ${e}'s unique unit?.`
-        default: `Tell me about ${e}`
-      }
+  props.related_entities?.map(({category, name}) => {
+    let r
+    switch (category) {
+      case ENTITY_TYPES.CIVILIZATION:
+        r = Math.floor(0 + (3 - 0) * Math.random())
+        switch (r) {
+          case 0: return makeQuestion(QuestionIntent.UNIQUE_TECH, name)
+          case 1: return makeQuestion(QuestionIntent.UNIQUE_UNIT, name)
+          default: return makeQuestion(QuestionIntent.INFO, name)
+        }
+      case ENTITY_TYPES.TECH:
+        r = Math.floor(0 + (3 - 0) * Math.random())
+        switch (r) {
+          case 0: return makeQuestion(QuestionIntent.COST, name)
+          case 1: return makeQuestion(QuestionIntent.INFO, name)
+          case 2: return makeQuestion(QuestionIntent.ENTITY_POSSESSION, name)
+          default: return makeQuestion(QuestionIntent.INFO, name)
+        }
+      case ENTITY_TYPES.UNIT:
+        r = Math.floor(0 + (3 - 0) * Math.random())
+        switch (r) {
+          case 0: return makeQuestion(QuestionIntent.COST, name)
+          case 1: return makeQuestion(QuestionIntent.INFO, name)
+          case 2: return makeQuestion(QuestionIntent.ENTITY_POSSESSION, name)
+          default: return makeQuestion(QuestionIntent.INFO, name)
+        }
+      case ENTITY_TYPES.BUILDING:
+        r = Math.floor(0 + (2 - 0) * Math.random())
+        switch (r) {
+          case 0: return makeQuestion(QuestionIntent.COST, name)
+          case 1: return makeQuestion(QuestionIntent.INFO, name)
+          default: return makeQuestion(QuestionIntent.INFO, name)
+        }
+      default: return makeQuestion(QuestionIntent.INFO, name)
     }
-    return `Tell me about ${e}`
   })
 )
 const questionsToShow = computed(() => {
@@ -48,7 +65,7 @@ const questionsToShow = computed(() => {
         <h4>Related Questions</h4>
         <div class="tag-container">
           <Tag v-for="q in questionsToShow" v-bind:content="q"/>
-          <div class="tag" @click="showAll = !showAll">
+          <div v-if="props.related_entities.length > 5" class="tag" @click="showAll = !showAll">
             {{ showAll ? "Less" : "More..." }}
           </div>
         </div>

@@ -48,7 +48,7 @@ class AOERegex():
     "(V|v)ietnamese",
     "(V|v)ikings",
   ]
-
+  # TODO add singular of civilization names like "Korean" or "Mayan"
   synonyms = {
     "camel": "camel rider",
     "camels": "camel rider",
@@ -192,6 +192,7 @@ class AOERegex():
 
     self.civ_name_match = "|".join(self.civ_names)
 
+    # TODO add 'price' key word
     self.cost_matches = list(map(re.compile, [
       f'(H|h)ow much do(es)? (?P<subject>{self.entities_match}) cost',
       f'((W|w)hat do(es)? )?(?P<subject>{self.entities_match}) cost',
@@ -208,7 +209,6 @@ class AOERegex():
       f'(E|e)xplain (?P<subject>{self.entities_match})',
       f'^(?P<subject>{self.entities_match})$'
     ]))
-
     self.unique_tech_match = list(map(re.compile, [
       f'((W|w)hat (is|are) )?(?P<civilization_name>{self.civ_name_match})((\')?s)? ((?P<age>(C|c)astle|(I|i)mperial) (age )?)?(unique tech((nologie|nology)?)|UT|ut)s?',
     ]))
@@ -222,7 +222,7 @@ class AOERegex():
     ]))
   # TODO add "the" support before entities
   # TODO logical operators of civs that get X but not Y, AND Y, OR Y
-  # This vs. that
+  # TODO This vs. that only if they are same entity class
 
 
   def getMatchEntity(self, match):

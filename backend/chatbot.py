@@ -1,5 +1,5 @@
 from constants import QUESTION_TYPES, ENTITY_CATEGORIES
-from regex import AOERegex
+from aoeRegex import AOERegex
 from aoeData import AOEData
 
 # TODO map armor class IDs to strings
@@ -58,7 +58,7 @@ class AOEChatBot:
       answer = self.getParsedQuestionAnswer(parsedResult)
       if answer["response"]:
         related_entities_from_answer = self.aoeRegex.extractEntities(answer["response"])
-        answer["related_entities"] = related_entities_from_answer
+        answer["related_entities"] = self.aoeData.getRelatedEntities(related_entities_from_answer)
       return answer
     response = "Sorry, I don't understand that, please try again."
     # TODO Log unknown questions
