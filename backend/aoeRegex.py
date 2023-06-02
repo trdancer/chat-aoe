@@ -2,6 +2,8 @@ import re
 import json
 import helpers
 from constants import QUESTION_TYPES
+import logging
+logging.basicConfig(filename="logs/queries.log", level=logging.DEBUG)
 
 class AOERegex():
   civ_names = [
@@ -169,7 +171,127 @@ class AOERegex():
     "ring archer": "ring archer armor",
     "feudal": "feudal age",
     "imperial": "imperial age",
-    "parthian": "parthian tactics"
+    "parthian": "parthian tactics",
+  }
+  civ_synonyms = {
+    "Aztec": "aztecs",
+    "aztec": "aztecs",
+    "Bengali": "bengalis",
+    "bengali": "bengalis",
+    "Berber": "berbers",
+    "berber": "berbers",
+    "Bohemian": "bohemians",
+    "bohemian": "bohemians",
+    "Briton": "britons",
+    "briton": "britons",
+    "Bulgarian": "bulgarians",
+    "bulgarian": "bulgarians",
+    "Burgundian": "burgundians",
+    "burgundian": "burgundians",
+    "Burma": "burmese",
+    "burma": "burmese",
+    "Byzantine": "byzantines",
+    "byzantine": "byzantines",
+    "Celt": "celts",
+    "celt": "celts",
+    "China": "chinese",
+    "china": "chinese",
+    "Cuman": "cumans",
+    "cuman": "cumans",
+    "Dravidian": "dravidians",
+    "dravidian": "dravidians",
+    "Ethiopian": "ethiopians",
+    "ethiopian": "ethiopians",
+    "Frank": "franks",
+    "frank": "franks",
+    "Goth": "goths",
+    "goth": "goths",
+    "Gurjara": "Gurjaras",
+    "gurjara": "gurjaras",
+    "Gurjar": "Gurjaras",
+    "gurjar": "gurjaras",
+    "Hindustani": "Hindustanis",
+    "hindustani": "hindustanis",
+    "Hun": "Huns",
+    "hun": "huns",
+    "Inca": "Incas",
+    "inca": "incas",
+    "Incan": "Incas",
+    "incan": "incas",
+    "Italian": "Italians",
+    "italian": "italians",
+    "Italy": "Italians",
+    "italy": "italians",
+    "Japan": "Japanese",
+    "japan": "japanese",
+    # "Khmer": "Khmers",
+    # "khmer": "khmers",
+    "Korean": "Koreans",
+    "korean": "koreans",
+    "Korea": "Koreans",
+    "korea": "koreans",
+    "Lithuanian": "Lithuanians",
+    "lithuanian": "lithuanians",
+    "Lithuania": "Lithuanians",
+    "lithuania": "lithuanians",
+    "Magyar": "Magyars",
+    "magyar": "magyars",
+    "Malaysia": "Malay",
+    "malaysia": "malay",
+    "Malian": "Malians",
+    "malian": "malians",
+    "Mali": "Malians",
+    "mali": "malians",
+    "Mayan": "Mayans",
+    "mayan": "mayans",
+    "Maya": "Mayans",
+    "maya": "mayans",
+    "Mongol": "Mongols",
+    "mongol": "mongols",
+    "Mongolia": "Mongols",
+    "mongolia": "mongols",
+    "Persian": "Persians",
+    "persian": "persians",
+    "Persia": "Persians",
+    "persia": "persians",
+    "Pole": "Poles",
+    "pole": "poles",
+    "Poland": "Poles",
+    "poland": "poles",
+    "Polish": "Poles",
+    "polish": "poles",
+    "Portugal": "Portuguese",
+    "portugal": "portuguese",
+    "Saracen": "Saracens",
+    "saracen": "saracens",
+    "Sicilian": "Sicilians",
+    "sicilian": "sicilians",
+    "Sicily": "Sicilians",
+    "sicily": "sicilians",
+    "Slav": "Slavs",
+    "slav": "slavs",
+    "Slavic": "Slavs",
+    "slavic": "slavs",
+    "Spanish": "Spanish",
+    "spanish": "spanish",
+    "Spain": "Spanish",
+    "spain": "spanish",
+    "Spainard": "Spanish",
+    "spainard": "spanish",
+    "Tatar": "Tatars",
+    "tatar": "tatars",
+    "Teuton": "Teutons",
+    "teuton": "teutons",
+    "Turk": "Turks",
+    "turk": "turks",
+    "Turkey": "Turks",
+    "turkey": "turks",
+    "Turkish": "Turks",
+    "turkish": "turks",
+    "Vietnam": "Vietnamese",
+    "vietnam": "vietnamese",
+    "Viking": "Vikings",
+    "viking": "vikings",
   }
   entities_match = None
   weak_entities_match = None
@@ -188,53 +310,79 @@ class AOERegex():
     entities_string = "|".join(entities_list)
     self.weak_entities_match = entities_string
     temp_synonyms_string = ['(' + k + ')' for k in self.synonyms.keys()]
-    self.entities_match = f'{"|".join(temp_synonyms_string)}|{entities_string}'
+    temp_civ_synonyms_string = ['(' + ck + ')' for ck in self.civ_synonyms.keys()]
+    
+    self.civ_name_match = f'{"|".join(temp_civ_synonyms_string)}|{"|".join(self.civ_names)}'
+    self.entities_match = f'{"|".join(temp_synonyms_string)}|{self.civ_name_match}|{entities_string}'
 
-    self.civ_name_match = "|".join(self.civ_names)
 
-    # TODO add 'price' key word
     self.cost_matches = list(map(re.compile, [
-      f'(H|h)ow much do(es)? (?P<subject>{self.entities_match}) cost',
-      f'((W|w)hat do(es)? )?(?P<subject>{self.entities_match}) cost',
-      f'((W|w)hat is )?((T|t)he )?(C|c)ost (of )?(?P<subject>{self.entities_match})',
+      f'(H|h)ow much do(es)? (the )?(?P<subject>{self.entities_match}) ((upgrade|tech(nology)?) )?cost',
+      f'((W|w)hat do(es)? )?((T|t)he )?(?P<subject>{self.entities_match}) ((upgrade|tech(nology)?) )?cost',
+      f'((W|w)hat is )?((T|t)he )?((C|c)ost|(P|p)rice) (of )?(?P<subject>{self.entities_match})',
     ]))
 
     self.civ_posession_matches = list(map(re.compile, [
-      f'((D|d)o(es)? )?(?P<civilization_name>{self.civ_name_match}) (get(s)?|have|has) (?P<subject>{self.entities_match})',
+      f'((D|d)o(es)? )?((T|t)he )?(?P<civilization_name>{self.civ_name_match}) (get(s)?|have|has) (the )?(?P<subject>{self.entities_match})( (upgrade|tech(nology)?))?',
     ]))
 
     self.info_matches = list(map(re.compile, [
-      f'(W|w)hat (does )?(?P<subject>{self.entities_match}) do',
-      f'(T|t)ell me about (?P<subject>{self.entities_match})',
-      f'(E|e)xplain (?P<subject>{self.entities_match})',
+      f'(W|w)hat (does )?(the )?(?P<subject>{self.entities_match}) ((upgrade|tech(nology)?) )?do',
+      f'(T|t)ell me about (?P<subject>{self.entities_match})( (upgrade|tech(nology)?))?',
+      f'(E|e)xplain (the )?(?P<subject>{self.entities_match})( (upgrade|tech(nology)?))?',
       f'^(?P<subject>{self.entities_match})$'
     ]))
     self.unique_tech_match = list(map(re.compile, [
-      f'((W|w)hat (is|are) )?(?P<civilization_name>{self.civ_name_match})((\')?s)? ((?P<age>(C|c)astle|(I|i)mperial) (age )?)?(unique tech((nologie|nology)?)|UT|ut)s?',
+      f'((W|w)hat (is|are) )?((T|t)he )?(?P<civilization_name>{self.civ_name_match})((\')?s)? ((?P<age>(C|c)astle|(I|i)mperial) (age )?)?(unique tech((nologie|nology)?)|UT|ut)s?',
     ]))
 
     self.unique_unit_match = list(map(re.compile, [
-      f'((W|w)hat (is|are) )?(?P<civilization_name>{self.civ_name_match})((\')?s)? (unique unit|UU|uu)s?',
+      f'((W|w)hat (is|are) )?((T|t)he )?(?P<civilization_name>{self.civ_name_match})((\')?s)? (unique unit|UU|uu)s?',
     ]))
 
     self.entity_possession_match = list(map(re.compile, [
-      f'(((W|w)h(at|ich) )?((is|are) )?)?((T|t)he )?(C|c)iv(ilization)?s? ((that )?(get|have)|with) (?P<subject>{self.entities_match})',
+      f'(((W|w)h(at|ich) )?((is|are) )?)?((T|t)he )?(C|c)iv(ilization)?s? ((that )?(get|have)|with) (the )?(?P<subject>{self.entities_match})( (upgrade|tech(nology)?))?',
     ]))
-  # TODO add "the" support before entities
   # TODO logical operators of civs that get X but not Y, AND Y, OR Y
-  # TODO This vs. that only if they are same entity class
+  # TODO This vs. that only if they are not techs
+  # TODO what is the name of civ UT/UU
+  # TODO These questions:
+  # What is the pikemen’s attack bonus versus camels?
 
+  # How much anti cavalry damage do Byzantine cataphracts resist?
+
+  # What is the movement speed of an unladen swallow a capped ram with/without drill?
+
+  # What’s the hitpoints of a Viking man-at-arms in Castle Age?
+
+  # Do hand cannoneers benefit from ballistics?
+
+  # How many petards does it take to destroy a castle?
+
+  # How many +2 crossbows does it take to kill a +2 knight with bloodlines in one shot?
+
+  # Did Spirit of the Law make a video on [x topic]?
+
+  # Has T-West done a pacifist run on [x scenario] yet?
+
+  # Can 25 knights beat 25 Teutonic knights?
+
+  # Does 40 archers trade well against 20 skirmishers?
 
   def getMatchEntity(self, match):
     subject = match.group('subject')
-    real_entity_name = self.synonyms.get(subject, subject).lower()
-    return real_entity_name
-
-  def extract_civilization(self, match):
-    return match.group('civilization_name')
+    real_entity_name = self.synonyms.get(subject)
+    if (not real_entity_name):
+      real_entity_name = self.civ_synonyms.get(subject, subject)
+    return real_entity_name.lower()
+  
+  def getMatchCiv(self, match):
+    civ = match.group('civilization_name')
+    real_civ_name = self.civ_synonyms.get(civ, civ).lower()
+    return real_civ_name
   
   def extract_entities_possession(self, match):
-    return (self.getMatchEntity(match), match.group('civilization_name'))
+    return (self.getMatchEntity(match), self.getMatchCiv(match))
 
   def extract_age(self, match):
     return match.group('age')
@@ -247,37 +395,44 @@ class AOERegex():
     return None
 
   def parseQuestion(self, question:str):
-    cleaned_question = re.sub("\?|\.", "", question).strip(" ")
+    cleaned_question = re.sub("\?|\.|\\n", "", question).strip(" ")
     match_result = None
     try:
       match_result = self.parseQuestionWithMatches(cleaned_question, self.civ_posession_matches)
       if match_result:
+        logging.info({"intent": QUESTION_TYPES["POSSESSION"], "cleaned_query": cleaned_question})
         return (self.extract_entities_possession(match_result), QUESTION_TYPES["POSSESSION"])
       
       match_result = self.parseQuestionWithMatches(cleaned_question, self.cost_matches)
       if (match_result):
+        logging.info({"intent": QUESTION_TYPES["COST"], "cleaned_query": cleaned_question})
         return (self.getMatchEntity(match_result), QUESTION_TYPES["COST"])
       
       match_result = self.parseQuestionWithMatches(cleaned_question, self.info_matches)
       if (match_result):
+        logging.info({"intent": QUESTION_TYPES["INFO"], "cleaned_query": cleaned_question})
         return (self.getMatchEntity(match_result), QUESTION_TYPES["INFO"])
       
       match_result = self.parseQuestionWithMatches(cleaned_question, self.unique_unit_match)
       if (match_result):
-        return (self.extract_civilization(match_result), QUESTION_TYPES["UNIQUE_UNIT"])
+        logging.info({"intent": QUESTION_TYPES["UNIQUE_UNIT"], "cleaned_query": cleaned_question})
+        return (self.getMatchCiv(match_result), QUESTION_TYPES["UNIQUE_UNIT"])
       
       match_result = self.parseQuestionWithMatches(cleaned_question, self.unique_tech_match)
       if (match_result):
-        return ((self.extract_civilization(match_result), self.extract_age(match_result)), QUESTION_TYPES["UNIQUE_TECH"])
+        logging.info({"intent": QUESTION_TYPES["UNIQUE_TECH"], "cleaned_query": cleaned_question})
+        return ((self.getMatchCiv(match_result), self.extract_age(match_result)), QUESTION_TYPES["UNIQUE_TECH"])
       
       match_result = self.parseQuestionWithMatches(cleaned_question, self.entity_possession_match)
       if (match_result):
+        logging.info({"intent": QUESTION_TYPES["ENTITY_POSSESSION"], "cleaned_query": cleaned_question})
         return (self.getMatchEntity(match_result), QUESTION_TYPES["ENTITY_POSSESSION"])
+      logging.info({"intent": -1, "cleaned_query": cleaned_question, "raw_query": question})
       
       
       return None
     except Exception as e:
-      print(e)
+      logging.error(f'error matching query \"{question}\" with error: {e}')
       return None
 
   # Return a list of all identifiable AOE entity strings from a given string
