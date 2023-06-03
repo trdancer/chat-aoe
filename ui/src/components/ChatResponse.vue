@@ -55,27 +55,27 @@ const questionsToShow = computed(() => {
 </script>
 
 <template>
-    <div class="dialog-box chat-response">
-      <h3 class="chat-header">
-        Chat AOE:
-      </h3>
-      <div v-html="props.response" class="response-text">
-      </div>
-      <div v-if="props.related_entities && props.related_entities.length > 0">
-        <h4>Related Questions</h4>
-        <div class="tag-container">
-          <Tag v-for="q in questionsToShow" v-bind:content="q"/>
-          <div v-if="props.related_entities.length > 5" class="tag" @click="showAll = !showAll">
-            {{ showAll ? "Less" : "More..." }}
-          </div>
+  <div class="dialog-box chat-response">
+    <h3 class="chat-header">
+      Chat AOE:
+    </h3>
+    <div v-html="props.response" class="response-text">
+    </div>
+    <div v-if="props.related_entities && props.related_entities.length > 0">
+      <h4>Related Questions</h4>
+      <div class="tag-container">
+        <Tag v-for="q in questionsToShow" v-bind:content="q"/>
+        <div v-if="props.related_entities.length > 5" class="tag" @click="showAll = !showAll">
+          {{ showAll ? "Less" : "More..." }}
         </div>
       </div>
-      <div class="time">
-        <i>
-          {{ formatTimestamp(props.timestamp) }}
-        </i>
-      </div>
     </div>
+    <div class="time">
+      <i>
+        {{ formatTimestamp(props.timestamp) }}
+      </i>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -91,4 +91,5 @@ h4 {
   margin-top: 0.7rem;
   margin-bottom: 0;
 }
+
 </style>

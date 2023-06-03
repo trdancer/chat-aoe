@@ -30,6 +30,6 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 80%
+  width: 90%
 }
 </style>

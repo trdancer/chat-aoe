@@ -83,7 +83,7 @@ class AOEChatBot:
     # TODO rate limiter
     return {
       "response": response,
-      "entities": [],
+      "entity_names": [],
       "civilization_access": [],
       "intent": -1,
       "related_entities": []

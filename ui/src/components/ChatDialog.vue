@@ -29,10 +29,12 @@ const store = useDefaultStore()
 
 <template>
   <div id='chat-container'>
-    <div v-for="{userQuery, chatResponse}, i in store.conversation" class="chat-dialog" >
-      <UserDialogVue  v-bind="userQuery"/>
-      <ChatResponseVue v-if="chatResponse" v-bind="chatResponse"/>
-    </div>
+    <TransitionGroup name="dialog">
+      <template v-for="{userQuery, chatResponse}, i in store.conversation" class="chat-dialog" >
+        <UserDialogVue v-bind="userQuery" />
+        <ChatResponseVue v-if="chatResponse" v-bind="chatResponse"/>
+      </template>
+    </TransitionGroup>
     <div id="anchor"></div>
   </div>
   <LoadingVue v-if="store.loading"/>
@@ -52,8 +54,5 @@ const store = useDefaultStore()
   overflow-anchor: auto;
   height: 1px;
 }
-/* .chat-dialog-enter-to {
-  opacity: 1;
-} */
 
 </style>

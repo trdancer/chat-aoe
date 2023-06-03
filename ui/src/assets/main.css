@@ -56,15 +56,15 @@ h1, h2, h3, h4, h5 {
 .chat-header {
   margin: 4px 0;
 }
-/* TODO get animations to work */
-.dialog-animation-enter-active {
-  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+
+.dialog-enter-active {
+  transition: opacity 0.5s ease-in-out, transform 0.3s ease-in-out;
 }
-.dialog-animation-enter-from {
+.dialog-enter-from {
   opacity: 0;
-  transform: translateY(-50px);
+  transform: translateY(50px);
 }
-.dialog-animation-enter-to {
+.dialog-enter-to {
   opacity: 1;
   transform: none;
 }

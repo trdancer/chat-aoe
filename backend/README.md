@@ -43,7 +43,7 @@ Response:
 ```json
 {
   "response": "plain text string answer here",
-  "entities": ["recognized", "AOE", "entity", "from question", "here"],
+  "entity_names": ["recognized", "AOE", "entity", "from question", "here"],
   "civilization_access": ["Aztecs", "Mayans", "Incas"],
   "intent": 1,
   "related_entities": ["entities", "in", "response"]
