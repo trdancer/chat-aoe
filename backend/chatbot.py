@@ -79,7 +79,6 @@ class AOEChatBot:
       response = "Seems like I can't research that technology right now, maybe if I can advance to the next age I'll be able to!"
     if (n == 5):
       response = "Wololo!"
-    # TODO spam filter
     # TODO rate limiter
     return {
       "response": response,

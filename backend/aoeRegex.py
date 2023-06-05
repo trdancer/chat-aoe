@@ -306,7 +306,7 @@ class AOERegex():
   def __init__(self, strings_filename):
     strings_file = open(strings_filename)
     id_description_map = json.load(strings_file)
-    entities_list = ['(' + helpers.firstLetterHelper(re.sub("\(|\)", "", e)) + ')' for e in list(id_description_map.values())[0:418]]
+    entities_list = ['(' + helpers.firstLetterHelper(re.sub("\(|\)", "", e)) + ')' for e in list(id_description_map.values())[0:426]]
     entities_string = "|".join(entities_list)
     self.weak_entities_match = entities_string
     temp_synonyms_string = ['(' + k + ')' for k in self.synonyms.keys()]
@@ -347,11 +347,12 @@ class AOERegex():
   # TODO This vs. that only if they are not techs
   # TODO what is the name of civ UT/UU
   # TODO These questions:
+  
   # What is the pikemen’s attack bonus versus camels?
 
   # How much anti cavalry damage do Byzantine cataphracts resist?
 
-  # What is the movement speed of an unladen swallow a capped ram with/without drill?
+  # What is the movement speed of a capped ram with drill?
 
   # What’s the hitpoints of a Viking man-at-arms in Castle Age?
 

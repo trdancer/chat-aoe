@@ -15,3 +15,11 @@ ENTITY_CATEGORIES = {
 
 API_PREFIX = "api"
 API_VERSION = "v1"
+
+DEFAULT_RESPONSE = {
+  "response": "Sorry, I couldn't answer that question",
+  "entity_names": [],
+  "civilization_access": [],
+  "intent": -1,
+  "related_entities": []
+}
