@@ -12,6 +12,7 @@ def create_app(string_filename="data/patch_85208_strings.json", data_filename="d
   app = Flask(__name__)
   CORS(app)
 
+  # In the future data would be attached with a patch version so you could see historical patch info
   aoeChatBot = AOEChatBot(string_filename, data_filename)
   
   # Put the spam filter at the API level in case we need it for other endpoints later
@@ -30,9 +31,12 @@ def create_app(string_filename="data/patch_85208_strings.json", data_filename="d
           return DEFAULT_RESPONSE
     return aoeChatBot.answerQuestion(query)
 
-  @app.route(f'/{API_PREFIX}/{API_VERSION}/help')
-  def help():
-      return "Help"
+  @app.route(f'/{API_PREFIX}/{API_VERSION}/info')
+  def info():
+      return {
+         "patch": "85208",
+         "api": "v1"
+      }
   
   return app
 

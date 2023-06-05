@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import useDefaultStore from './store';
+const store = useDefaultStore()
+store.getAppInfo()
 </script>
 
 <template>
@@ -18,15 +21,24 @@ import { RouterLink, RouterView } from 'vue-router'
   
   <RouterView />
   <nav>
-    <RouterLink to="/about" class="no-link-deco">
-      <div class="align-horizontal">
-
-        <span class="material-symbols-outlined">
-          info
-        </span>
-        About
-      </div>
-    </RouterLink>
+    <ul>
+      <li v-if="store.appInfo.patch">
+        <h5>
+          Patch {{ store.appInfo.patch }}
+        </h5>
+      </li>
+      <li>
+        <RouterLink to="/about" class="no-link-deco">
+          <div class="align-horizontal">
+            
+            <span class="material-symbols-outlined">
+              info
+            </span>
+            About
+          </div>
+        </RouterLink>
+      </li>
+    </ul>
   </nav>
 </template>
 
@@ -46,6 +58,18 @@ header {
 nav {
   position: relative;
   bottom: 0px;
-  padding: 1.2rem 0;
+  padding: 1.1rem 0;
+}
+ul {
+  list-style: none;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+ul li {
+  margin-right: 10px;
+}
+ul li h5 {
+  margin: 0;
 }
 </style>

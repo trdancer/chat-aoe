@@ -11,6 +11,9 @@ interface DefaultStore {
   loading: boolean,
   error: undefined | string,
   showHelp: boolean,
+  appInfo: {
+    patch: string,
+  }
 }
 const useDefaultStore = defineStore(
   'myStore',
@@ -23,6 +26,9 @@ const useDefaultStore = defineStore(
         loading: false,
         error: undefined,
         showHelp: false,
+        appInfo: {
+          patch: ""
+        },
       }
     },
     actions: {
@@ -65,6 +71,17 @@ const useDefaultStore = defineStore(
       },
       toggleHelp() {
         this.showHelp = !this.showHelp
+      },
+      async getAppInfo() {
+        const url = `${apiUrl}/info`
+        try {
+          const response = await axios.get(url)
+          this.appInfo.patch = response.data.patch
+        } catch (e) {
+          this.appInfo.patch = "Error"
+          console.log(e)
+        }
+
       }
     }
   }
