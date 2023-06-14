@@ -49,6 +49,10 @@ const store = useDefaultStore()
   overflow-y: auto;
   max-height: 70vh;
   width: 100%;
+  padding-top: 4px;
+  border-width: 4px 0;
+  border-style: solid;
+  border-color: #624224;
 }
 #anchor {
   overflow-anchor: auto;

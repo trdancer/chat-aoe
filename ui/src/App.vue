@@ -58,18 +58,28 @@ header {
 nav {
   position: relative;
   bottom: 0px;
-  padding: 1.1rem 0;
+  padding: 1.1rem 10px;
 }
 ul {
   list-style: none;
   display: flex;
   justify-content: left;
   align-items: center;
+  padding-inline-start: 0;
 }
 ul li {
   margin-right: 10px;
 }
 ul li h5 {
   margin: 0;
+}
+
+@media (max-width: 960px) {
+  #name {
+    margin: 10px 0;
+  }
+  nav {
+    padding: 0 0;
+  }
 }
 </style>

@@ -34,4 +34,9 @@ const store = useDefaultStore()
 #clear-button-container button span {
   margin-left: 5px;
 }
+@media (max-width: 960px) {
+  #clear-button-container {
+    justify-content: space-between;
+  }
+}
 </style>

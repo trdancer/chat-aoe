@@ -30,7 +30,9 @@ const sampleQuestions = [
 #help-list {
   list-style-type: none;
   font-style: italic;
+  padding-inline-start: 0px;
 }
+
 #help-list li {
   text-align: center;
   margin: 10px 0;
@@ -39,4 +41,5 @@ const sampleQuestions = [
   cursor: pointer;
   text-decoration: underline;
 }
+
 </style>

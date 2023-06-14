@@ -85,7 +85,7 @@ const questionsToShow = computed(() => {
 .tag-container {
   display: flex;
   flex-wrap: wrap;
-  padding: 0.7rem 0;
+  padding-top: 0.7rem;
 }
 h4 {
   margin-top: 0.7rem;

@@ -23,13 +23,23 @@ main {
   align-items: center;
   background-color: rgba(228, 228, 228, 0.616);
   padding: 30px 50px;
-  border-radius: 10px;
+  border-radius: 7px;
 }
 
 .inner-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 90%
+  width: 90%;
+}
+
+@media (max-width: 960px) {
+  main {
+    padding: 10px;
+  }
+  .inner-container {
+    max-height: 80vh;
+    width: 95%;
+  }
 }
 </style>

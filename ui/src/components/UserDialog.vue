@@ -10,7 +10,7 @@ const props = defineProps<UserQuery>()
         <h3 class="chat-header">
           You:
         </h3>
-        <div>
+        <div class="response-text">
           {{ props.question }}
         </div>
       </div>

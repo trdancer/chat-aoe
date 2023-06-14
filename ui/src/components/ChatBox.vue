@@ -75,12 +75,18 @@ const onKeyDown = () => {
   width: 95%;
   height: 3rem;
   resize: vertical;
+  transition: height 0.2s ease-in-out;
 }
 .submit-button {
   padding: 0.8rem 3rem;
   margin-top: 1rem;
 }
-textarea:focus-visible{
+textarea:focus-visible {
   outline: #dc9553 inset 2px;
+}
+@media (max-width: 960px) {
+  #query-box:focus-visible {
+    height: 5.5rem;
+  }
 }
 </style>

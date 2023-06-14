@@ -49,9 +49,8 @@ h1, h2, h3, h4, h5 {
   font-size: 0.8rem;
   margin: 6px 0;
 }
-.response {
-  margin-top: 3px;
-  margin-bottom: 6px;
+.response-text {
+  line-height: 1.5rem;
 }
 .chat-header {
   margin: 4px 0;
@@ -67,4 +66,19 @@ h1, h2, h3, h4, h5 {
 .dialog-enter-to {
   opacity: 1;
   transform: none;
+}
+
+@media (max-width: 960px) {
+  #app {
+    max-width: 100vw;
+    margin: 0 auto;
+    padding: 0;
+  }
+  .dialog-box {
+    padding: 0.5rem 1rem;
+  }
+  .response-text {
+    font-size: 1.1rem;
+    line-height: 1.7rem;
+  }
 }
