@@ -7,8 +7,8 @@ import logging
 class AOEChatBot:
   aoeData = None
   aoeRegex = None
-  def __init__(self, string_filename, data_filename):
-    self.aoeData = AOEData(string_filename, data_filename)
+  def __init__(self, string_filename, data_filename, armor_datafilename):
+    self.aoeData = AOEData(string_filename, data_filename, armor_datafilename)
     self.aoeRegex = AOERegex(string_filename)
 
   def getParsedQuestionAnswer(self, parsed_question):

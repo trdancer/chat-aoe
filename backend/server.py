@@ -6,14 +6,14 @@ from constants import API_PREFIX, API_VERSION, DEFAULT_RESPONSE
 # import logging
 
 
-def create_app(string_filename="data/patch_85208_strings.json", data_filename="data/patch_85208.json"):
+def create_app(string_filename="data/patch_85208_strings.json", data_filename="data/patch_85208.json", armor_datafilename="data/armor.json"):
    
   # logging.basicConfig(filename="logs/queries.log", level=logging.DEBUG)
   app = Flask(__name__)
   CORS(app)
 
   # In the future data would be attached with a patch version so you could see historical patch info
-  aoeChatBot = AOEChatBot(string_filename, data_filename)
+  aoeChatBot = AOEChatBot(string_filename, data_filename, armor_datafilename)
   
   # Put the spam filter at the API level in case we need it for other endpoints later
 

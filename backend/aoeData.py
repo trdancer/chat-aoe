@@ -11,17 +11,20 @@ class AOEData():
   game_data = None
   name_info_map = None
 
-  def __init__(self, strings_filename, data_filename):
+  def __init__(self, strings_filename, data_filename, armor_filename):
     # load in the file of strings.json
     # This is the mapping from numbers/keys to descriptions
     strings_file = open(strings_filename)
     data_file = open(data_filename)
+    armor_file = open(armor_filename)
     id_description_map = json.load(strings_file)
     self.string_data = copy.deepcopy(id_description_map)
     _game_data_file = json.load(data_file)
     name_info_map = {}
     # This is the mapping from unit/building identifiers to their number/key
     
+    armor_data = json.load(armor_file)
+    self.armor_data = copy.deepcopy(armor_data)
     new_game_data = copy.deepcopy(_game_data_file)
     
     temp_data = _game_data_file["data"]
@@ -90,6 +93,7 @@ class AOEData():
     
     strings_file.close()
     data_file.close()
+    armor_file.close()
     self.game_data = new_game_data
     self.info_map = name_info_map
   
@@ -99,85 +103,121 @@ class AOEData():
       raise Exception(f'Sorry, I cannot figure out what \"{entity_name}\" is')
     return entity_info
   
-
+  def getEntityAttackString(self, entity):
+    info = entity["info"]
+    answer = f'<div class="entity-bonus-damage">Bonus Damage:<ul>'
+    for attack_info in info["Attacks"]:
+      attack_class = attack_info["Class"]
+      attack_amount = attack_info["Amount"]
+      entity_class_string = self.armor_data[str(attack_class)]
+      answer += f'<li class="entity-bonus-damage-item"><b>{entity_class_string}</b>: {attack_amount}</li>'
+    answer += f'</ul></div>'
+    return answer
+  
+  def getEntityArmorString(self, entity):
+    info = entity["info"]
+    answer = f'<div class="entity-armor-class">Armor Classes:<ul>'
+    for armor_info in info["Armours"]:
+      armor_class = armor_info["Class"]
+      armor_amount = armor_info["Amount"]
+      entity_class_string = self.armor_data[str(armor_class)]
+      answer += f'<li class="entity-armor-class-item"><b>{entity_class_string}</b>: {armor_amount}</li>'
+    answer += f'</ul></div>'
+    return answer
+  
   def getEntityCostString(self, entity):
     costs = entity["info"]["Cost"]
-    s = f'{entity["name"]} costs:\n'
+    s = f'<div class="entity-cost">{entity["name"]} costs:<ul>'
     for resource, amount in costs.items():
-      s += f'\t{amount} {resource}\n'
+      s += f'<li class="entity-cost-item">{amount} {resource}</li>'
+    s += f'</ul>'
     maybe_upgrade_info = entity["info"].get("upgrade_info")
     if maybe_upgrade_info:
       upgrade_cost = maybe_upgrade_info["Cost"]
-      s += f'\nCost to Research:\n'
+      s += f'<div class="entity-upgrade-cost">Cost to Research:<ul>'
       for upgrade_resource, upgrade_amount in upgrade_cost.items():
-        s += f'\t{upgrade_amount} {upgrade_resource}\n'
+        s += f'<li class="entity-upgrade-cost-item">{upgrade_amount} {upgrade_resource}</li>'
+      s += f'</ul>'
+    s += f'</div>'
     return s
 
   def getUnitUpgradeCostString(self, entity):
     maybe_upgrade_info = entity["info"].get("upgrade_info")
-    s = f'\nCost to Research/Upgrade to {entity["name"]}:\n'
     if maybe_upgrade_info:
+      s = f'<div class="unit-upgrade-cost">Cost to Research/Upgrade to {entity["name"]}:<ul>'
       upgrade_cost = maybe_upgrade_info["Cost"]
       for upgrade_resource, upgrade_amount in upgrade_cost.items():
-        s += f'\t{upgrade_amount} {upgrade_resource}\n'
+        s += f'<li class="unit-upgrade-cost-item">{upgrade_amount} {upgrade_resource}</li>'
+      s += f'</ul></div>'
     else:
-      s += f'\tNo upgrade needed to get {entity["name"]}'
+      return f'No upgrade needed to get {entity["name"]}'
     return s
 
   def getUnitInfoString(self, entity):
     info = entity["info"]
     cost = self.getEntityCostString(entity)
-    answer = f'{entity["description"]}\n\n' \
-            f'{cost}\n\n'                     \
-            f'Unit Information\n'                     \
-            f'HP:             {info["HP"]}\n' \
-            f'Melee Armor:    {info["MeleeArmor"]}\n' \
-            f'Pierce Armor:   {info["PierceArmor"]}\n' \
-            f'Attack:         {info["Attack"]}\n' \
-            f'Range:          {info["Range"]}\n' \
-            f'Accuracy:       {info["AccuracyPercent"]}%\n' \
-            f'Speed:          {info["Speed"]}\n' \
-            f'LOS:            {info["LineOfSight"]}\n' \
-            f'Garrison Capac: {info["GarrisonCapacity"]}\n' \
-            f'Train Time:     {info["TrainTime"]}\n' \
-            f'Reload Time:    {info["ReloadTime"]}\n' \
-            f'Attack Delay:   {info["AttackDelaySeconds"]:0.4}\n' \
-            f'Frame Delay:    {info["FrameDelay"]}\n' \
-            f'Charge Attack:  {info["MaxCharge"]}'
+    answer = f'<span class="entity-name">{entity["name"]}</span><br>' \
+            f'<span class="entity-description">{entity["description"]}</span>' \
+            f'{cost}'                     \
+            f'<span class="entity-information">Unit Information</span>'                     \
+            f'<ul>' \
+            f'<li class="entity-information-item"><b>HP:</b>             {info["HP"]}</li>' \
+            f'<li class="entity-information-item"><b>Melee Armor:</b>    {info["MeleeArmor"]}</li>' \
+            f'<li class="entity-information-item"><b>Pierce Armor:</b>   {info["PierceArmor"]}</li>' \
+            f'<li class="entity-information-item"><b>Attack:</b>         {info["Attack"]}</li>' \
+            f'<li class="entity-information-item"><b>Range:</b>          {info["Range"]}</li>' \
+            f'<li class="entity-information-item"><b>Accuracy:</b>       {info["AccuracyPercent"]}%</li>' \
+            f'<li class="entity-information-item"><b>Speed:</b>          {info["Speed"]}</li>' \
+            f'<li class="entity-information-item"><b>LOS:</b>            {info["LineOfSight"]}</li>' \
+            f'<li class="entity-information-item"><b>Garrison Capac:</b> {info["GarrisonCapacity"]}</li>' \
+            f'<li class="entity-information-item"><b>Train Time:</b>     {info["TrainTime"]}</li>' \
+            f'<li class="entity-information-item"><b>Reload Time:</b>    {info["ReloadTime"]}</li>' \
+            f'<li class="entity-information-item"><b>Attack Delay:</b>   {info["AttackDelaySeconds"]:0.4}</li>' \
+            f'<li class="entity-information-item"><b>Frame Delay:</b>    {info["FrameDelay"]}</li>' \
+            f'<li class="entity-information-item"><b>Charge Attack:</b>  {info["MaxCharge"]}</li>' \
+            f'</ul>'
+    answer += self.getEntityAttackString(entity)
+    answer += self.getEntityArmorString(entity)
     return answer
 
   def getBuildingInfoString(self, entity):
     info = entity["info"]
     cost = self.getEntityCostString(entity)
-    answer = f'{entity["description"]}\n\n' \
-            f'{cost}\n\n'  \
-            f'HP:             {info["HP"]}\n' \
-            f'Melee Armor:    {info["MeleeArmor"]}\n' \
-            f'Pierce Armor:   {info["PierceArmor"]}\n' \
-            f'Attack:         {info["Attack"]}\n' \
-            f'Range:          {info["Range"]}\n' \
-            f'Accuracy:       {info["AccuracyPercent"]}%\n' \
-            f'LOS:            {info["LineOfSight"]}\n' \
-            f'Garrison Capac: {info["GarrisonCapacity"]}\n' \
-            f'Build Time:     {info["TrainTime"]}\n' \
-            f'Reload Time:    {info["ReloadTime"]}\n'
-
+    answer = f'<span class="entity-name">{entity["name"]}</span><br>' \
+            f'<span class="entity-name">{entity["description"]}</span>' \
+            f'{cost}'  \
+            f'<span class="entity-information">Building Information</span>'                     \
+            f'<ul>' \
+            f'<li class="entity-information-item"><b>HP:</b>             {info["HP"]}</li>' \
+            f'<li class="entity-information-item"><b>Melee Armor:</b>    {info["MeleeArmor"]}</li>' \
+            f'<li class="entity-information-item"><b>Pierce Armor:</b>   {info["PierceArmor"]}</li>' \
+            f'<li class="entity-information-item"><b>Attack:</b>         {info["Attack"]}</li>' \
+            f'<li class="entity-information-item"><b>Range:</b>          {info["Range"]}</li>' \
+            f'<li class="entity-information-item"><b>Accuracy:</b>       {info["AccuracyPercent"]}%</li>' \
+            f'<li class="entity-information-item"><b>LOS:</b>            {info["LineOfSight"]}</li>' \
+            f'<li class="entity-information-item"><b>Garrison Capac:</b> {info["GarrisonCapacity"]}</li>' \
+            f'<li class="entity-information-item"><b>Build Time:</b>     {info["TrainTime"]}</li>' \
+            f'<li class="entity-information-item"><b>Reload Time:</b>    {info["ReloadTime"]}</li>' \
+            f'</ul>'
+    answer += self.getEntityAttackString(entity)
+    answer += self.getEntityArmorString(entity)
     return answer
 
   def getCivInfoString(self, entity):
-    answer = f'{entity["description"]["civ_type"]}\n'
+    answer = f'<span class="civ-type">{entity["description"]["civ_type"]}</span><ul class="civ-bonuses">'
     for bonus in entity["description"]["bonuses"]:
-      answer += f'{bonus}\n'
+      answer += f'<li class="civ-bonus-item">{bonus}</li>'
       # entity_match = re.search(entities_string)
+    answer += f'</ul>'
     return answer
   
   def getTechInfoString(self, entity):
-    answer = f'{self.getEntitityDescriptionString(entity)}\n\n' \
-              f'{self.getEntityCostString(entity)}\n'
+    answer = f'{self.getEntityDescriptionString(entity)}<br>' \
+              f'{self.getEntityCostString(entity)}'
     return answer
 
-  def getEntitityDescriptionString(self, entity):
-    return f'{entity["name"]}\n{entity["description"]}'
+  def getEntityDescriptionString(self, entity):
+    return f'<span class="entity-name">{entity["name"]}</span><br>{entity["description"]}'
 
   def getEntitityInfoString(self, entity):
     answer = ""
@@ -197,9 +237,9 @@ class AOEData():
     civ_entity_list = self.game_data["techtrees"][civ_name][entity["category"]]
     entity_id = entity["id"]
     if entity_id in civ_entity_list:
-      return f'Yes, {civ_name} do get {entity["name"]}'
+      return f'Yes, <span class="civ-name">{civ_name}</span> do get <span class="entity-name">{entity["name"]}</span>'
     else:
-      return f'No, {civ_name} do not get {entity["name"]}'
+      return f'No, <span class="civ-name">{civ_name}</span> do not get <span class="entity-name">{entity["name"]}</span>'
 
   def getEntityPossessionString(self, entity_name):
     entity = self.getEntityInfoByName(entity_name)
@@ -207,12 +247,12 @@ class AOEData():
     if not civs:
       return 'I\'m sorry I had trouble answering that question'
     if len(civs) == 1:
-      return f'Only {civs[0]} get {entity["name"]}'
+      return f'Only <span class="civ-name">{civs[0]}</span> get  <span class="entity-name">{entity["name"]}</span>'
     
-    answer = f'The following civilizations get {entity["name"]}: '
-    answer += ", ".join(civs)
-    # for c in civs:
-    #   answer += f'\n\t{c},'
+    answer = f'The following civilizations get  <span class="entity-name">{entity["name"]}</span>:<ul>'
+    for civ in civs:
+      answer += f'<li class="civ-name civ-access-item">{civ}</li>'
+    answer += f'</ul>'
     return answer
 
   def getCivsWithEntity(self, entity_name):
@@ -249,20 +289,21 @@ class AOEData():
       (castleUniqueTechName, castleDescription) = self.getCastleAgeTechString(civ)
       (imperialUniqueTechName, imperialDescription) = self.getImperialAgeTechString(civ)
 
-      title = f'{civTitleCase} unique techs are {castleUniqueTechName} and {imperialUniqueTechName}\n'
+      title = f'<span class="civ-name">{civTitleCase}</span> unique techs are' \
+              f'<span class="entity-name">{castleUniqueTechName}</span> and <span class="entity-name">{imperialUniqueTechName}</span><br>'
       
-      answer += f'Castle Age Unique Tech:\n' \
-                f'{castleDescription}\n' \
-                f'Imperial Age Unique Tech:\n' \
+      answer += f'<span class="unique-tech-header"><span class="entity-name">{castleUniqueTechName}</span> (Castle Age):</span><br>' \
+                f'{castleDescription}<br>' \
+                f'<span class="unique-tech-header"><span class="entity-name">{imperialUniqueTechName}</span> (Imperial Age):</span><br>' \
                 f'{imperialDescription}'
     elif age.lower() == 'castle':
       (uniqueTechName, description) = self.getCastleAgeTechString(civ)
-      title = f'{civTitleCase} Castle Age unique tech is {uniqueTechName}\n'
+      title = f'<span class="civ-name">{civTitleCase}</span> Castle Age unique tech is <span class="entity-name">{uniqueTechName}</span><br>'
       answer += description
     
     elif age.lower() == 'imperial':
       (uniqueTechName, description) = self.getImperialAgeTechString(civ)
-      title = f'{civTitleCase} Imperial Age unique tech is {uniqueTechName}\n'
+      title = f'<span class="civ-name">{civTitleCase}</span> Imperial Age unique tech is <span class="entity-name">{uniqueTechName}</span><br>'
       answer += description
     
     return title + answer
@@ -285,8 +326,8 @@ class AOEData():
     imperialEntity = self.getEntityInfoByName(imperialUnitName)
     imperialUnitDescription = self.getUnitInfoString(imperialEntity)
 
-    answer = f'{civTitleCase} Unique Unit from the Castle is the {castleUnitName}\n' \
-             f'{castleUnitDescription}\n' \
+    answer = f'<span class="civ-name">{civTitleCase}</span> Unique Unit from the Castle is the <span class="entity-name">{castleUnitName}</span><br>' \
+             f'{castleUnitDescription}<br>' \
              f'{imperialUnitDescription}'
     
     return answer

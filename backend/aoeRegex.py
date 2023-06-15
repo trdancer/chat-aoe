@@ -370,6 +370,8 @@ class AOERegex():
 
   # Does 40 archers trade well against 20 skirmishers?
 
+  # Do X entity get bonus vs Y entity?
+  
   def getMatchEntity(self, match):
     subject = match.group('subject')
     real_entity_name = self.synonyms.get(subject)
