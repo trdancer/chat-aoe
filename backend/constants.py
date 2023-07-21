@@ -13,6 +13,13 @@ ENTITY_CATEGORIES = {
   "BUILDING": "buildings",
 }
 
+ENTITY_TYPES = {
+  "CIVILIZATION": "CIVILIZATION",
+  "UNIT": "UNIT",
+  "TECH": "TECH",
+  "BUILDING": "BUILDING",
+}
+
 API_PREFIX = "api"
 API_VERSION = "v1"
 

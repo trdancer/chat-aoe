@@ -50,7 +50,6 @@ class AOERegex():
     "(V|v)ietnamese",
     "(V|v)ikings",
   ]
-  # TODO add singular of civilization names like "Korean" or "Mayan"
   synonyms = {
     "camel": "camel rider",
     "camels": "camel rider",
@@ -224,8 +223,6 @@ class AOERegex():
     "italy": "italians",
     "Japan": "Japanese",
     "japan": "japanese",
-    # "Khmer": "Khmers",
-    # "khmer": "khmers",
     "Korean": "Koreans",
     "korean": "koreans",
     "Korea": "Koreans",
@@ -293,6 +290,8 @@ class AOERegex():
     "Viking": "Vikings",
     "viking": "vikings",
   }
+  # TODO question analytics, most frequent, least frequent question, entity asked about
+  # AOE "Hub"?
   entities_match = None
   weak_entities_match = None
   civ_name_match = None

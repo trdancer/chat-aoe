@@ -204,7 +204,7 @@ class AOEData():
     return answer
 
   def getCivInfoString(self, entity):
-    answer = f'<span class="civ-type">{entity["description"]["civ_type"]}</span><ul class="civ-bonuses">'
+    answer = f'<span class="civ-type">{entity["description"]["civType"]}</span><ul class="civ-bonuses">'
     for bonus in entity["description"]["bonuses"]:
       answer += f'<li class="civ-bonus-item">{bonus}</li>'
       # entity_match = re.search(entities_string)

@@ -15,6 +15,6 @@ def parseEntityDescription(desc:str):
 
 def parseCivDescription(desc:str):
   spl = desc.split("\n")
-  civ_type = spl[0].replace("<br>", "")
+  civType = spl[0].replace("<br>", "")
   bonuses = spl[2:]
-  return { "civ_type": civ_type, "bonuses": bonuses }
+  return { "civType": civType, "bonuses": bonuses }
