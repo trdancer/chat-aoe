@@ -100,13 +100,13 @@ class Civilization(mongoengine.Document):
   unique = mongoengine.EmbeddedDocumentField(UniqueInfo)
   units = mongoengine.ListField(mongoengine.IntField())
 
-civ = Civilization(
-  name='test', 
-  civilizationId=1, 
-  description='test123', 
-  buildings=[1,2], 
-  techs=[3,4],
-  units = [6, 7]
-)
-civ.save()
-Civilization.objects()
+# civ = Civilization(
+#   name='test', 
+#   civilizationId=1, 
+#   description='test123', 
+#   buildings=[1,2], 
+#   techs=[3,4],
+#   units = [6, 7]
+# )
+# civ.save()
+# Civilization.objects()
