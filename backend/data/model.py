@@ -1,20 +1,16 @@
 import mongoengine
 import enum
+import constants
 # connection string (should probably be read from a config file) 
 # mongodb://127.0.0.1:27017
-# TODO create database initilization, validation script
-mongoengine.connect(
-  db='chat-aoe',
-  host='mongodb://127.0.0.1',
-  port=27017
-)
+# TODO create database configuration, validation script
+
 
 class EntityType(enum.Enum):
-  BULDING = "BUILDING"
-  UNIT = "UNIT"
-  UNIT_UPGRADE = "UNIT_UPGRADE"
-  TECHNOLOGY = "TECHNOLOGY"
-
+  BULDING =constants.ENTITY_TYPES["BUILDING"]
+  UNIT = constants.ENTITY_TYPES["UNIT"]
+  UNIT_UPGRADE = constants.ENTITY_TYPES["UNIT_UPGRADE"]
+  TECHNOLOGY = constants.ENTITY_TYPES["TECH"]
 
 class Cost(mongoengine.EmbeddedDocument):
   wood = mongoengine.IntField()
@@ -33,13 +29,13 @@ class ArmorAttackAmount(mongoengine.EmbeddedDocument):
 class Entity(mongoengine.Document):
     # Meta
     type = mongoengine.EnumField(EntityType, required=True)
-    entityId = mongoengine.IntField(required=True, primary_key=True)
+    entityId = mongoengine.StringField(required=True, primary_key=True)
     name = mongoengine.StringField(required=True)
     helpText = mongoengine.StringField()
     internalName = mongoengine.StringField(required=True)
     # Unit only meta
-    trait: mongoengine.IntField()
-    traitPiece: mongoengine.IntField()
+    trait = mongoengine.IntField()
+    traitPiece = mongoengine.IntField()
 
     # Creation
     cost = mongoengine.EmbeddedDocumentField(Cost)
@@ -100,6 +96,22 @@ class Civilization(mongoengine.Document):
   unique = mongoengine.EmbeddedDocumentField(UniqueInfo)
   units = mongoengine.ListField(mongoengine.IntField())
 
+class MetaData(mongoengine.Document):
+  patchVersion = mongoengine.StringField(primary_key=True)
+
+def createConnection(env, db_version):
+  if env == 'PROD' or env == 'PRODUCTION':
+    mongoengine.connect(
+      db=f'production_chat-aoe_{db_version}',
+      host='mongodb://127.0.0.1',
+      port=27017
+    )
+  else:
+    mongoengine.connect(
+      db=f'development_chat-aoe_{db_version}',
+      host='mongodb://127.0.0.1',
+      port=27017
+    )
 # civ = Civilization(
 #   name='test', 
 #   civilizationId=1, 

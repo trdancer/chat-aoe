@@ -18,6 +18,7 @@ ENTITY_TYPES = {
   "UNIT": "UNIT",
   "TECH": "TECH",
   "BUILDING": "BUILDING",
+  "UNIT_UPGRADE": "UNIT_UPGRADE",
 }
 
 API_PREFIX = "api"

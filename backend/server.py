@@ -7,7 +7,20 @@ from constants import API_PREFIX, API_VERSION, DEFAULT_RESPONSE
 
 
 def create_app(string_filename="data/patch_85208_strings.json", data_filename="data/patch_85208.json", armor_datafilename="data/armor.json"):
-   
+  # TODO wrap app in WSGI server like waitress
+  # TODO implement API key authentication
+  # Prod mode:
+  # - Production database
+  # - debug level: error
+  # - debugging: off
+  # - testing: off
+  # - secret key: set
+  # Dev mode:
+  # - dev database
+  # - debug level: debug
+  # - debugging: on
+  # - testing: on
+
   # logging.basicConfig(filename="logs/queries.log", level=logging.DEBUG)
   app = Flask(__name__)
   CORS(app)

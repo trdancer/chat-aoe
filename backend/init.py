@@ -1,4 +1,6 @@
-import model
+import os
+import sys
+import data.model
 import mongoengine
 import copy
 import json
@@ -6,28 +8,31 @@ import enum
 import constants
 import helpers
 
-def importData(strings_filename, data_filename, armor_filename):
-  # check database for possible existing data
-
+def importData(strings_filename:str, data_filename:str, armor_filename:str):
   # load data from files
   strings_file = open(strings_filename)
   data_file = open(data_filename)
   armor_file = open(armor_filename)
-  _strings_data = json.load(strings_file)
+  _strings_data:dict = json.load(strings_file)
   strings_data = copy.deepcopy(_strings_data)
-  _game_data = json.load(data_file)
-  game_data = copy.deepcopy(_strings_data)
-  _armor_data = json.load(armor_file)
+  _game_data:dict = json.load(data_file)
+  game_data = copy.deepcopy(_game_data)
+  _armor_data:dict = json.load(armor_file)
   armor_data = copy.deepcopy(_armor_data)
-  
   # utility functions for getting strings
-  def getEntityNameString(entity) -> str:
+  def getEntityNameString(entity:dict) -> str:
     return strings_data[str(entity["LanguageNameId"])]
-  def getEntityHelpString(entity) -> str:
+  def getEntityHelpString(entity:dict) -> str:
     return strings_data[str(entity["LanguageHelpId"])]
   
-  # insert game data
+  # insert metadata
+  patch_version = helpers.parseFileNameVersion(data_filename)
+  metadata = data.model.MetaData(patchVersion=patch_version)
+  metadata.save()
+
+  # Insert game data
   # Insert civilizations
+  print('inserting civilizations...')
   for civName, civInfo in game_data["techtrees"].items():
     civilizationId = game_data["civ_names"][civName]
     civilizationDescription = strings_data[str(game_data["civ_helptexts"][civName])]
@@ -41,11 +46,14 @@ def importData(strings_filename, data_filename, armor_filename):
       units=civInfo["units"]
     )
   # insert armor
+  print('inserting armors...')
   for armorId, armorName in armor_data.items():
     importArmor(armorId=armorId, name=armorName)
   
+  print('inserting buildings...')
   # insert buildings
-  for buildingId, buildingInfo in game_data["data"]["buildings"]:
+  count = 0
+  for buildingId, buildingInfo in game_data["data"]["buildings"].items():
     importBuilding(
       entityId=buildingId,
       name=getEntityNameString(buildingInfo),
@@ -66,8 +74,10 @@ def importData(strings_filename, data_filename, armor_filename):
       lineOfSight=buildingInfo["LineOfSight"],
       garrisonCapacity=buildingInfo["GarrisonCapacity"],
     )
+  print(count)
+  print('inserting techs...')
   # insert techs
-  for techId, techInfo in game_data["data"]["techs"]:
+  for techId, techInfo in game_data["data"]["techs"].items():
     importTech(
       entityId=techId,
       name=getEntityNameString(techInfo),
@@ -77,8 +87,9 @@ def importData(strings_filename, data_filename, armor_filename):
       researchTime=techInfo["ResearchTime"],
       repeatable=techInfo["Repeatable"]
     )
+  print('inserting unit upgrades...')
   # insert unit upgrades
-  for unitUpgradeId, unitUpgradeInfo in game_data["data"]["unit_upgrades"]:
+  for unitUpgradeId, unitUpgradeInfo in game_data["data"]["unit_upgrades"].items():
     # The unit upgrade Id is not unique, rather it is the ID of the unit 
     # that this unit upgrades into
     # for example, the long swordsman upgrade has Id = 77
@@ -90,13 +101,14 @@ def importData(strings_filename, data_filename, armor_filename):
     # This can be used in the future to build the line of upgrades for a given unit
     
     importUnitUpgrade(
-      entityId=unitUpgradeId + unitUpgradeInfo["ID"],
+      entityId=int(unitUpgradeId) + unitUpgradeInfo["ID"],
       name=unitUpgradeInfo["internal_name"],
       researchTime=unitUpgradeInfo["ResearchTime"],
       internalName=unitUpgradeInfo["internal_name"]
     )
+  print('inserting units')
   # insert units
-  for unitId, unitInfo in game_data["data"]["units"]:
+  for unitId, unitInfo in game_data["data"]["units"].items():
     importUnit(
       entityId=unitId,
       name=getEntityNameString(unitInfo),
@@ -146,16 +158,16 @@ def importCivilization(
   units
 ):
   parsedDescription = helpers.parseCivDescription(description)
-  civ = model.Civilization(
+  civ = data.model.Civilization(
     name=name,
     civilizationId=civilizationId,
-    description=model.CivilizationDescription(
+    description=data.model.CivilizationDescription(
       civType=parsedDescription["civType"],
       bonuses=parsedDescription["bonuses"],
     ),
     buildings=buildings,
     techs=techs,
-    unique=model.UniqueInfo(
+    unique=data.model.UniqueInfo(
       castleAgeUniqueTech=unique["castleAgeUniqueTech"],
       castleAgeUniqueUnit=unique["castleAgeUniqueUnit"],
       imperialAgeUniqueTech=unique["imperialAgeUniqueTech"],
@@ -195,22 +207,22 @@ def importUnit(
   speed:float,
 ):
   type = constants.ENTITY_TYPES["UNIT"]
-  unit = model.Entity(
+  unit = data.model.Entity(
     type = type,
-    entityId = entityId,
+    entityId = f'{type}_{entityId}',
     name = name,
     helpText = helpers.parseEntityDescription(helpText),
     internalName = internalName,
     trait = trait,
     traitPiece = traitPiece,
-    cost = model.Cost(**cost),
+    cost = data.model.Cost(**helpers.lowerCaseKeys(cost)),
     trainTime = trainTime,
     hp = hp,
     meleeArmor = meleeArmor,
     pierceArmor = pierceArmor,
-    armors = model.ArmorAttackAmount(**armors),
+    armors=list(map(helpers.makeArmorAttackDict, armors)),
     attack = attack,
-    attacks = model.ArmorAttackAmount(**attacks),
+    attacks=list(map(helpers.makeArmorAttackDict, attacks)),
     reloadTime = reloadTime,
     accuracyPercent = accuracyPercent,
     attackDelaySeconds = attackDelaySeconds,
@@ -238,13 +250,13 @@ def importTech(
   repeatable:bool
 ):
   type = constants.ENTITY_TYPES["TECH"]
-  tech = model.Entity(
+  tech = data.model.Entity(
     type=type,
-    entityId=entityId,
+    entityId=f'{type}_{entityId}',
     name=name,
     helpText=helpers.parseEntityDescription(helpText),
     internalName=internalName,
-    cost=model.Cost(**cost),
+    cost=data.model.Cost(**helpers.lowerCaseKeys(cost)),
     researchTime=researchTime,
     repeatable=repeatable,
   )
@@ -258,9 +270,9 @@ def importUnitUpgrade(
   internalName:str,
 ):
   type = constants.ENTITY_TYPES["UNIT_UPGRADE"]
-  unitUpgrade = model.Entity(
+  unitUpgrade = data.model.Entity(
     type=type,
-    entityId=entityId,
+    entityId=f'{type}_{entityId}',
     name=name,
     researchTime=researchTime,
     internalName=internalName,
@@ -278,9 +290,9 @@ def importBuilding(
   hp:int,
   meleeArmor:int,
   pierceArmor:int,
-  armors:dict,
+  armors:list,
   attack:int,
-  attacks:dict,
+  attacks:list,
   reloadTime:float,
   accuracyPercent:int,
   minRange:int,
@@ -289,20 +301,20 @@ def importBuilding(
   garrisonCapacity:int
 ):
   type = constants.ENTITY_TYPES["BUILDING"]
-  building = model.Entity(
+  building = data.model.Entity(
     type=type,
-    entityId=entityId,
+    entityId=f'{type}_{entityId}',
     name=name,
     helpText=helpers.parseEntityDescription(helpText),
     internalName=internalName,
-    cost=model.Cost(**cost),
+    cost=data.model.Cost(**helpers.lowerCaseKeys(cost)),
     trainTime=trainTime,
     hp=hp,
     meleeArmor=meleeArmor,
     pierceArmor=pierceArmor,
-    armors=armors,
+    armors=list(map(helpers.makeArmorAttackDict, armors)),
     attack=attack,
-    attacks=model.ArmorAttackAmount(**attacks),
+    attacks=list(map(helpers.makeArmorAttackDict, attacks)),
     reloadTime=reloadTime,
     accuracyPercent=accuracyPercent,
     minRange=minRange,
@@ -316,8 +328,113 @@ def importArmor(
   armorId:int,
   name:str,
 ):
-  armor = model.Armor(
+  armor = data.model.Armor(
     armorId=armorId, 
     name=name
   )
   armor.save()
+
+def deleteAllGameData():
+  # delete armor/attacks
+  print('Deleting all Armors...')
+  armors = data.model.Armor.drop_collection()
+  
+  # delete Civilizations
+  print('Deleting all Civilizations...')
+  civs = data.model.Civilization.drop_collection()
+
+  # delete entities
+  print('Deleting all Entities...')
+  entities = data.model.Entity.drop_collection()
+
+  # delete metadata
+  print('deleting all metadata')
+  metadata = data.model.MetaData.drop_collection()
+
+def validateDatabase(data_filename:str, armor_filename:str):
+  data_file = open(data_filename)
+  armor_file = open(armor_filename)
+  _game_data = json.load(data_file)
+  game_data = copy.deepcopy(_game_data)
+  _armor_data = json.load(armor_file)
+  armor_data = copy.deepcopy(_armor_data)
+  data_file.close()
+  armor_file.close()
+
+  file_patch_version = helpers.parseFileNameVersion(data_filename)
+  # print(file_patch_version)
+  patch_version_count = data.model.MetaData.objects(patchVersion=file_patch_version).count()
+  # print(patch_version_count)
+  # number of civs should be equal to the number in the data file
+  civ_count = data.model.Civilization.objects().count()
+  file_civ_count = len(game_data["techtrees"].keys())
+  
+  # number of entities should be equal to the sum of the units, techs, upgrades, and buildings
+  unit_count = data.model.Entity.objects(type=constants.ENTITY_TYPES["UNIT"]).count()
+  file_unit_count = len(game_data["data"]["units"].keys())
+  
+  unit_upgrade_count = data.model.Entity.objects(type=constants.ENTITY_TYPES["UNIT_UPGRADE"]).count()
+  file_unit_upgrade_count = len(game_data["data"]["unit_upgrades"].keys())
+  
+  tech_count = data.model.Entity.objects(type=constants.ENTITY_TYPES["TECH"]).count()
+  file_tech_count = len(game_data["data"]["techs"].keys())
+  
+  building_count = data.model.Entity.objects(type=constants.ENTITY_TYPES["BUILDING"]).count()
+  file_building_count = len(game_data["data"]["buildings"].keys())
+  
+  # print("# UNIT IN DB", unit_count)
+  # print(file_unit_count)
+  # print("# UNIT UPGRADE IN DB", unit_upgrade_count)
+  # print(file_unit_upgrade_count)
+  # print("# TECH IN DB", tech_count)
+  # print(file_tech_count)
+  # print("# BUILDING IN DB", building_count)
+  # print(file_building_count)
+  # print("TOTAL IN FILE", file_unit_count + file_unit_upgrade_count + file_tech_count + file_building_count)
+  # number of armor classes in database should be equal to the number in the file
+  armor_count = data.model.Armor.objects.count()
+  file_armor_count = len(armor_data.keys())
+  isValid = patch_version_count == 1 and \
+            civ_count == file_civ_count and \
+            unit_count == file_unit_count and \
+            unit_upgrade_count == file_unit_upgrade_count and \
+            tech_count == file_tech_count and \
+            building_count == file_building_count and \
+            armor_count == file_armor_count
+  return isValid
+
+def main():
+  py_env = os.environ.get('PY_ENV')
+  strings_filename = os.environ.get('STRINGS_FILE')
+  data_filename = os.environ.get('DATA_FILE')
+  armor_filename = os.environ.get('ARMOR_FILE')
+  validate_only = os.environ.get('VALIDATE_ONLY')
+  if (not py_env):
+    py_env = 'DEV'
+  if (not strings_filename):
+    print('STRINGS_FILE environment variable required.')
+    sys.exit(1)
+  if (not data_filename):
+    print('DATA_FILE environment variable required.')
+    sys.exit(1)
+  if (not armor_filename):
+    print('ARMOR_FILE environment variable required.')
+    sys.exit(1)
+  
+  patch_version = helpers.parseFileNameVersion(data_filename)
+  data.model.createConnection(py_env, patch_version)
+
+  # check database for possible existing data
+  isValid = validateDatabase(data_filename, armor_filename)
+  if (not isValid and not validate_only):
+    print('database invalid, reimporting all game data')
+    deleteAllGameData()
+    importData(strings_filename, data_filename, armor_filename)
+    print('Database is valid, exiting.')
+  if (validate_only):
+    print('Database status:', 'VALID' if isValid else 'INVALID')
+  mongoengine.disconnect()
+  sys.exit(0)
+
+if __name__ == "__main__":
+  main()

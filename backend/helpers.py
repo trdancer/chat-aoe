@@ -18,3 +18,23 @@ def parseCivDescription(desc:str):
   civType = spl[0].replace("<br>", "")
   bonuses = spl[2:]
   return { "civType": civType, "bonuses": bonuses }
+
+def parseFileNameVersion(filename:str):
+  # assumes filename is named like so:
+  # patch_{version}_data
+  splitString = filename.split('_')
+  if (len(splitString) < 2):
+    raise Exception("Invalid data file name")
+  return splitString[1]
+
+def lowerCaseKeys(d:dict):
+  new_dict:dict = {}
+  for key, value in d.items():
+    new_dict[key.lower()] = value
+  return new_dict
+
+def makeArmorAttackDict(a:dict):
+  return {
+    "armorId": a["Class"],
+    "amount": a["Amount"],
+  }
