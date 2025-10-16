@@ -7,24 +7,31 @@ Not much work is needed to run the backend server for the app:
 - Python 3.7+
 - Pip
 
-1. Initialize Virtual Environment
+From the `backend/` directory:
 
+1. Create Virtual Environment
 ```
-chat-aoe/backend$ . ./.venv/bin/activate
-```
-
-2. Install Python Dependencies
-
-```
-chat-aoe/backend$ pip install -r requirements.txt
+python3 -m venv .venv
 ```
 
-3. Run Server
+2. Initialize Virtual Environment
+
+```
+. ./.venv/bin/activate
+```
+
+3. Install Python Dependencies
+
+```
+pip install -r requirements.txt
+```
+
+4. Run Server
 
 This is a pretty basic Flask server so you can run:
 
 ```
-chat-aoe/backend$ flask --app server run
+flask --app server run
 ```
 
 This will run the app on port 5000.
@@ -87,3 +94,40 @@ Information about a civilization's unique unit from the castle
 **5:**
 
 What civilizations get an entity
+
+
+
+<!-- 
+  # TODO question analytics, most frequent, least frequent question, entity asked about
+
+  # TODO logical operators of civs that get X but not Y, AND Y, OR Y
+  # TODO This vs. that only if they are not techs
+  # TODO what is the name of civ UT/UU
+  # TODO These questions:
+    #   Specific info questions:
+    # HP, Base attack, Bonus damage, movement speed, frame delay, regeneration rate?
+    # Armor, hidden armor, range
+  
+  # What is the pikemen’s attack bonus versus camels?
+
+  # How much anti cavalry damage do Byzantine cataphracts resist?
+
+  # What is the movement speed of a capped ram with drill?
+
+  # What’s the hitpoints of a Viking man-at-arms in Castle Age?
+
+  # Do hand cannoneers benefit from ballistics?
+
+  # How many petards does it take to destroy a castle?
+
+  # How many +2 crossbows does it take to kill a +2 knight with bloodlines in one shot?
+
+  # Did Spirit of the Law make a video on [x topic]?
+
+  # Has T-West done a pacifist run on [x scenario] yet?
+
+  # Can 25 knights beat 25 Teutonic knights?
+
+  # Does 40 archers trade well against 20 skirmishers?
+
+  # Do X entity get bonus vs Y entity? -->

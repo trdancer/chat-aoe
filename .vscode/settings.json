@@ -1,4 +1,4 @@
 {
-  "python.envFile": "${workspaceFolder}/backend/.env",
-  "python.defaultInterpreterPath": "python3"
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.pythonProjects": []
 }
