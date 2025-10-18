@@ -1,8 +1,7 @@
-import random
 from flask import Response, current_app, make_response, request, g
-from backend.flaskr.routes.chat.chat_service import AOEChatService
-from backend.flaskr.utils.array import randElement
-from backend.flaskr.constants.chat_constants import CHAT_UNSUCCESSFULL_MESSAGES
+from routes.chat.chat_service import AOEChatService
+from utils.array import randElement
+from constants.chat_constants import CHAT_UNSUCCESSFULL_MESSAGES
 
 def filter_response(query: str) -> int:
     for token in query.split():

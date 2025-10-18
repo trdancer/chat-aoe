@@ -1,5 +1,5 @@
-from backend.flaskr.constants.chat_constants import CHAT_UNSUCCESSFULL_MESSAGES
-from backend.flaskr.utils.array import randElement
+from constants.chat_constants import CHAT_UNSUCCESSFULL_MESSAGES
+from utils.array import randElement
 
 
 class ChatResponse:

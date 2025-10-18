@@ -3,7 +3,7 @@ import pprint
 from typing import Any, List, Dict
 LANGUAGE_PART_VALUES = {
     # a type of entity you are talking about
-    "ENTITY_SPECIFIER": "ENTITY_SPECIFIER",
+    "ENTITY_TYPE_SPECIFIER": "ENTITY_TYPE_SPECIFIER",
     # A specific age
     "AGE_SPECIFIER": "AGE_SPECIFIER",
     # A civilization
@@ -11,9 +11,14 @@ LANGUAGE_PART_VALUES = {
     # A unit, building, tech, or upgrade 
     "ENTITY": "ENTITY",
     # A attribute of a civ like techs, UUs
-    "CIV_ATTRIBUTE_SPECIFIER": 'CIV_ATTRIBUTE_SPECIFIER',
+    "CIV_ATTRIBUTE": 'CIV_ATTRIBUTE',
     # An attribute of an entity like cost, range, HP, etc.
-    "ENTITY_ATTRIBUTE_SPECIFIER": "ENTITY_ATTRIBUTE_SPECIFIER",
+    "ENTITY_ATTRIBUTE": "ENTITY_ATTRIBUTE",
+    # The specific type of attack/armor like melee or pierce
+    "ATTACK_CLASS_SPECIFIER": "ATTACK_CLASS_SPECIFIER",
+    # Refering to a civilization as a concept
+    "CIVILZATION_KEYWORD": "CIVILIZATION_KEYWORD",
+    "BONUS_SPECIFIER": "BONUS_SPECIFIER"
 }
 
 ENTITY_TYPES = {
@@ -25,19 +30,7 @@ ENTITY_TYPES = {
 
 # ---- ENTITY SPECIFIERS -----
 # meta parts of speech that declare what type of entity you are talking about
-ENTITY_SPECIFIERS = [
-    # {
-    #     "value": ENTITY_TYPES['CIVILIZATION'],
-    #     "label": 'Civilization',
-    #     "aliases": [
-    #         "civ",
-    #         "civilization",
-    #         "civs",
-    #         "nation",
-    #         "nations",
-    #     ],
-    #     "language_part": LANGUAGE_PART_VALUES['ENTITY_SPECIFIER']
-    # },
+ENTITY_TYPE_SPECIFIERS = [
     {
         "value": ENTITY_TYPES['BUILDING'],
         "label": 'Building',
@@ -46,7 +39,7 @@ ENTITY_SPECIFIERS = [
             "buildings",
             'builds',
         ],
-        "language_part": LANGUAGE_PART_VALUES['ENTITY_SPECIFIER']
+        "language_part": LANGUAGE_PART_VALUES['ENTITY_TYPE_SPECIFIER']
     },
     {
         "value": ENTITY_TYPES['TECHNOLOGY'],
@@ -57,7 +50,7 @@ ENTITY_SPECIFIERS = [
             'technologies',
             'techs',
         ],
-        "language_part": LANGUAGE_PART_VALUES['ENTITY_SPECIFIER']
+        "language_part": LANGUAGE_PART_VALUES['ENTITY_TYPE_SPECIFIER']
     },
     {
         "value": ENTITY_TYPES['UNIT'],
@@ -66,7 +59,7 @@ ENTITY_SPECIFIERS = [
             "unit"
             "units",
         ],
-        "language_part": LANGUAGE_PART_VALUES['ENTITY_SPECIFIER']
+        "language_part": LANGUAGE_PART_VALUES['ENTITY_TYPE_SPECIFIER']
     },
     {
         "value": ENTITY_TYPES['UPGRADE'],
@@ -77,7 +70,7 @@ ENTITY_SPECIFIERS = [
             "boost",
             "boosts",
         ],
-        "language_part": LANGUAGE_PART_VALUES['ENTITY_SPECIFIER']
+        "language_part": LANGUAGE_PART_VALUES['ENTITY_TYPE_SPECIFIER']
     },
 ]
 # ---- AGE MODIFIERS -----
@@ -1194,7 +1187,7 @@ ENTITY_ATTRIBUTE_VALUES = {
     # BONUS ATTACKS
 }
 
-ENTITY_ATTRIBUTE_SPECIFIERS = [
+ENTITY_ATTRIBUTES = [
     {
         "value": ENTITY_ATTRIBUTE_VALUES['HIT_POINTS'],
         "label": 'Hit Points',
@@ -1204,7 +1197,7 @@ ENTITY_ATTRIBUTE_SPECIFIERS = [
             "hit points",
             'hits',
         ],
-        "language_part": LANGUAGE_PART_VALUES['ENTITY_ATTRIBUTE_SPECIFIER']
+        "language_part": LANGUAGE_PART_VALUES['ENTITY_ATTRIBUTE']
     },
     {
         "value": ENTITY_ATTRIBUTE_VALUES['COST'],
@@ -1213,21 +1206,113 @@ ENTITY_ATTRIBUTE_SPECIFIERS = [
             "cost",
             'price',
             'build cost',
-            'cost of',
-            'price of',
             'expense',
-            'expense of',
         ],
-        "language_part": LANGUAGE_PART_VALUES['ENTITY_ATTRIBUTE_SPECIFIER']
+        "language_part": LANGUAGE_PART_VALUES['ENTITY_ATTRIBUTE']
+    },
+]
+ATTACK_CLASS_SPECIFIER_VALUES = {
+    'BASE_MELEE': 'BASE_MELEE',
+    'BASE_PIERCE': 'BASE_PIERCE',
+    'CAVALRY': 'CAVALRY',
+    "INFANTRY": "INFANTRY",
+    "ARCHERS": "ARCHERS",
+    "WONDERS": "WONDERS",
+    "SIEGE_UNITS": "SIEGE_UNITS",
+    "HEAVY_WARSHIPS": "HEAVY_WARSHIPS",
+    "ELEPHANT": "ELEPHANT",
+    "TREES": "TREES",
+    "UNIQUE_UNITS": "UNIQUE_UNITS",
+    "GUNPOWDER": "GUNPOWDER",
+    "MONKS": "MONKS",
+    "SPEARMEN": "SPEARMEN",
+    "MOUNTED_ARCHERS": "MOUNTER_ARCHERS",
+    "SHOCK_INFANTRY": "SHOCK_INFANTRY",
+    "CAMELS": "CAMELS",
+    "ANTI_ARCHER": "ANTI_ARCHER",
+    "LEITIS_ATTACK": "LEITIS_ATTACK",
+    "FISHING_SHIPS": "FISHING_SHIPS",
+    "MOUNTED_UNITS": "MOUNTED_UNITS",
+    "Hussite Wagons and Ballista Elephants": "Hussite Wagons and Ballista Elephants",
+    "Condottieri": "Condottieri",
+    "MAMELUKES": "MAMELUKES",
+    "HEROES": "HEROES",
+    "NONE": "NONE",
+    "Buildings except Fish Traps": "Buildings except Fish Traps",
+    "Stone Walls, Gates, Towers, and Harbors": "Stone Walls, Gates, Towers, and Harbors",
+    "Predator Animals": "Predator Animals",
+    "Ships excluding Fire Ships": "Ships excluding Fire Ships",
+    "Rams, Unpacked Trebuchets, and Siege Towers": "Rams, Unpacked Trebuchets, and Siege Towers",
+    "Standard Buildings except Fish Traps and Wonders": "Standard Buildings except Fish Traps and Wonders",
+    "Walls and Gates": "Walls and Gates",
+    "Hunted Predator Animals": "Hunted Predator Animals",
+    "Castles and Kreposts": "Castles and Kreposts",
+}
+ATTACK_CLASS_SPECIFIERS = [
+    {
+        "value": ATTACK_CLASS_SPECIFIER_VALUES['BASE_MELEE'],
+        "label": 'Melee',
+        "language_part": LANGUAGE_PART_VALUES["ATTACK_CLASS_SPECIFIER"],
+        "aliases": [
+            'melee',
+            'mele',
+            'meele',
+        ]
+    },
+    {
+        "value": ATTACK_CLASS_SPECIFIER_VALUES['BASE_PIERCE'],
+        "label": 'Pierce',
+        "language_part": LANGUAGE_PART_VALUES["ATTACK_CLASS_SPECIFIER"],
+        "aliases": [
+            'pierce',
+            'piercing',
+            'range',
+            'ranged',
+        ]
+    },
+    {
+        "value": ATTACK_CLASS_SPECIFIER_VALUES['CAVALRY'],
+        "label": 'Cavalry',
+        "language_part": LANGUAGE_PART_VALUES["ATTACK_CLASS_SPECIFIER"],
+        "aliases": [
+            'cavalry',
+            'cav',
+            'horse',
+            'horses',
+            'ranged',
+        ]
+    },
+    {
+        "value": ATTACK_CLASS_SPECIFIER_VALUES['INFANTRY'],
+        "label": 'Infantry',
+        "language_part": LANGUAGE_PART_VALUES["ATTACK_CLASS_SPECIFIER"],
+        "aliases": [
+            'infantry',
+            'inf',
+            'inft',
+            'inftr',
+            'ground troops',
+            'swordsmen',
+        ]
+    },
+    {
+        "value": ATTACK_CLASS_SPECIFIER_VALUES['ARCHERS'],
+        "label": 'Archers',
+        "language_part": LANGUAGE_PART_VALUES["ATTACK_CLASS_SPECIFIER"],
+        "aliases": [
+            'archers',
+            'archer',
+            'ranged foot soldiers',
+            'ranged soldiers',
+        ]
     },
 ]
 
 # ------ CIV ATTRIBUTES -----
 # parts of speech that declare what type of attribute of a civ you are talking about
-CIV_ATTRIBUTE_SPECIFIER_VALUES = {
+CIV_ATTRIBUTE_VALUES = {
     "CLASSIFICATION": "CLASSIFICATION",
     "BONUS": "BONUS",
-    "TEAM_BONUS": "TEAM_BONUS",
     "UNIQUE_TECH": "UNIQUE_TECH",
     "UNIQUE_UNIT": "UNIQUE_UNIT",
     "REGION": "REGION",
@@ -1237,17 +1322,16 @@ CIV_ATTRIBUTE_SPECIFIER_VALUES = {
 
 CIV_ATTRIBUTE_SPECIFIERS = [
     {
-        "value": CIV_ATTRIBUTE_SPECIFIER_VALUES["BONUS"],
-        "label": 'Civilization Bonuses',
+        "value": CIV_ATTRIBUTE_VALUES["BONUS"],
+        "label": 'Bonus',
         "aliases": [
-            'civ bonus',
-            'civ bonuses',
             'bonus',
+            'bonuses',
         ],
-        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE_SPECIFIER"],
+        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE"],
     },
     {
-        "value": CIV_ATTRIBUTE_SPECIFIER_VALUES["UNIQUE_TECH"],
+        "value": CIV_ATTRIBUTE_VALUES["UNIQUE_TECH"],
         "label": 'Unique Technologies',
         "aliases": [
             'unique technology',
@@ -1257,10 +1341,10 @@ CIV_ATTRIBUTE_SPECIFIERS = [
             'ut',
             'uts',
         ],
-        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE_SPECIFIER"],
+        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE"],
     },
     {
-        "value": CIV_ATTRIBUTE_SPECIFIER_VALUES["UNIQUE_UNIT"],
+        "value": CIV_ATTRIBUTE_VALUES["UNIQUE_UNIT"],
         "label": 'Unique Units',
         "aliases": [
             'unique unit',
@@ -1268,10 +1352,10 @@ CIV_ATTRIBUTE_SPECIFIERS = [
             'uu',
             'uus',
         ],
-        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE_SPECIFIER"],
+        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE"],
     },
     {
-        "value": CIV_ATTRIBUTE_SPECIFIER_VALUES["CLASSIFICATION"],
+        "value": CIV_ATTRIBUTE_VALUES["CLASSIFICATION"],
         "label": 'Civilization Type',
         "aliases": [
             'civ type',
@@ -1283,30 +1367,20 @@ CIV_ATTRIBUTE_SPECIFIERS = [
             'focus of',
             'focuses',
         ],
-        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE_SPECIFIER"],
+        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE"],
     },
     {
-        "value": CIV_ATTRIBUTE_SPECIFIER_VALUES["REGION"],
+        "value": CIV_ATTRIBUTE_VALUES["REGION"],
         "label": 'Region',
         "aliases": [
             'region',
             'area',
             'locality',
         ],
-        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE_SPECIFIER"],
+        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE"],
     },
     {
-        "value": CIV_ATTRIBUTE_SPECIFIER_VALUES["TEAM_BONUS"],
-        "label": 'Team Bonus',
-        "aliases": [
-            'team bonus',
-            'civ team bonuses',
-            'tem bonus',
-        ],
-        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE_SPECIFIER"],
-    },
-    {
-        "value": CIV_ATTRIBUTE_SPECIFIER_VALUES["ARCHITECTURE"],
+        "value": CIV_ATTRIBUTE_VALUES["ARCHITECTURE"],
         "label": 'Architecture Set',
         "aliases": [
             'architecture',
@@ -1315,25 +1389,79 @@ CIV_ATTRIBUTE_SPECIFIERS = [
             'architecture design',
             'building design',
         ],
-        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE_SPECIFIER"],
+        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE"],
     },
     {
-        "value": CIV_ATTRIBUTE_SPECIFIER_VALUES["EXPANSION"],
+        "value": CIV_ATTRIBUTE_VALUES["EXPANSION"],
         "label": 'Expansion',
         "aliases": [
             'expansion',
             'dlc',
         ],
-        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE_SPECIFIER"],
+        "language_part": LANGUAGE_PART_VALUES["CIV_ATTRIBUTE"],
     },
 
 ]
 
+BONUS_SPECIFIER_VALUES = {
+    "TEAM_BONUS": "TEAM_BONUS",
+    "CIV_BONUS": "CIV_BONUS"
+}
 
+BONUS_SPECIFIERS = [
+    {
+        "language_part": LANGUAGE_PART_VALUES['BONUS_SPECIFIER'],
+        "label": 'Team Bonus',
+        "value": BONUS_SPECIFIER_VALUES["TEAM_BONUS"],
+        "aliases": [
+            "team",
+            "ally"
+        ],
+    },
+    {
+        "language_part": LANGUAGE_PART_VALUES['BONUS_SPECIFIER'],
+        "label": 'Civilization Bonuses',
+        "value": BONUS_SPECIFIER_VALUES["CIV_BONUS"],
+        "aliases": [
+            "civilization",
+            "civ",
+        ],
+    }
+]
+
+CIVILIZATION_KEYWORD_VALUE = "CIVILIZATION_KEYWORD"
+
+CIVILIZATION_KEYWORD = [{
+    "value": CIVILIZATION_KEYWORD_VALUE,
+    "label": 'Civilization',
+    "aliases": [
+        'civ',
+        'civs',
+        'civilization',
+        'civilizations',
+        'nation',
+        'nations',
+        'clan',
+        'clans',
+        'group',
+        'groups',
+        'people',
+        'peoples',
+        'society',
+        'societies',
+        'culture',
+        'cultures',
+        'empire',
+        'empires',
+        'kingdom',
+        'kingdoms',
+    ],
+    "language_part": LANGUAGE_PART_VALUES["CIVILZATION_KEYWORD"],
+}]
 
 # MODIFIERS: CIVILIZATION, TECHS (including unique techs), CIV ALLY, AGE, Attributes, specifier (upgrade, unit)
 
-LANGUAGE_KEYWORDS = AGES + ENTITY_SPECIFIERS + CIVILIZATIONS + CIV_ATTRIBUTE_SPECIFIERS + ENTITIES + ENTITY_ATTRIBUTE_SPECIFIERS
+LANGUAGE_KEYWORDS = AGES + ENTITY_TYPE_SPECIFIERS + CIVILIZATIONS + CIV_ATTRIBUTE_SPECIFIERS + ENTITIES + ENTITY_ATTRIBUTES + CIVILIZATION_KEYWORD + BONUS_SPECIFIERS
 # LANGUAGE_KEYWORDS = UNITS
 
 def makeDict(language: List[dict[str, Any]]):

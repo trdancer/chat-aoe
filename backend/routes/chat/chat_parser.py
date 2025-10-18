@@ -1,8 +1,7 @@
 from copy import deepcopy
 import re
 from typing import Dict, List, Set, Tuple, Any
-from ...constants.aoe_constants import ENTITIES, ENTITY_TYPES, LANGUAGE_KEYWORDS, LANGUAGE_DICTIONARY
-import pprint
+from constants.aoe_constants import LANGUAGE_KEYWORDS, LANGUAGE_DICTIONARY
 class ChatParserService():
     def __init__(self):
         pass
@@ -131,7 +130,8 @@ class ChatParserService():
         tokenized_alias = alias.split(' ')
         query_index = 0
         for alias_token in tokenized_alias:
-
+            if query_index >= len(query_tokens):
+                return None
             query_token = query_tokens[query_index]
             if query_token == alias_token:
                 query_index = query_index + 1
@@ -257,7 +257,7 @@ class ChatParserService():
                 final_tokens.append([original_token])
                 i = i + 1
         
-        return final_tokens, unique_matches_by_position
+        return final_tokens, replacement_dict
 
 """
 language element: an identifier or alias of something like one word 'arbalester'
