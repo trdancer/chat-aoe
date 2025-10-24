@@ -1,0 +1,72 @@
+from enum import Enum
+
+class ResourceType(Enum):
+    FOOD = 'F'
+    WOOD = 'W'
+    GOLD = 'G'
+    STONE = 'S'
+
+class Age(Enum):
+    DARK = 'Dark'
+    FEUDAL = 'FUEDAL'
+    CASTLE = 'CASTLE'
+    IMPERIAL = 'IMPERIAL'
+    ALL = 'ALL'
+
+
+class ArchitectureType(Enum):
+    AFRICAN = 1
+    CENTRAL_ASIAN = 2
+    CENTRAL_EUROPEAN = 3
+    EAST_ASIAN = 4
+    EASTERN_EUROPEAN = 5
+    MEDITERRANEAN = 6
+    MIDDLE_EASTERN = 7
+    MESOAMERICAN = 8
+    SOUTH_ASIAN = 9
+    SOUTHEAST_ASIAN = 10
+    WESTERN_EUROPE = 11
+
+class ArmorClass(Enum):
+    WONDER = 0
+    INFANTRY = 1
+    HEAVY_WARSHIP = 2
+    BASE_MELEE = 3
+    BASE_PIERCE = 4
+    WAR_ELEPHANT = 5
+    CAVALRY = 8
+    ALL_BUILDINGS = 11
+    STONE_DEFENSE = 13
+    PREDATOR_ANIMALS = 14
+    ARCHER = 15
+    NON_FISHING_SHIPS = 16
+    HIGH_PIERCE_SIEGE = 17
+    TREE = 18
+    UNIQUE_UNIT = 19
+    SIEGE_UNIT = 20
+    STANDARD_BUILDING = 21
+    WALL_AND_GATE = 22
+    GUNPOWDER_UNIT = 23
+    HUNTED_PREDATOR_ANIMAL = 24
+    MONK = 25
+    CASTLE = 26
+    SPEARMEN = 27
+    MOUNTED_ARCHER = 28
+    SHOCK_INFANTRY = 29
+    CAMEL = 30
+    UNBLOCKABLE_MELEE = 31
+    CONDOTTIERO = 32
+    UNUSED = 33
+    FISHING_SHIP = 34
+    MAMELUKE = 35
+    HEROES_AND_KINGS = 36
+    HEAVY_SIEGE = 37
+    SKIRMISHER = 38
+    ROYAL_HEIRS = 39
+    HOUSE = 40
+
+class EntityType(Enum):
+  UNIT= "UNIT"
+  TECHNOLOGY= "TECHNOLOGY"
+  BUILDING= "BUILDING"
+  UPGRADE= "UPGRADE"

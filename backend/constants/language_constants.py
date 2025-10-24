@@ -1,6 +1,8 @@
 from copy import deepcopy
 import pprint
 from typing import Any, List, Dict
+
+from backend.constants.data_constants import EntityType
 LANGUAGE_PART_VALUES = {
     # a type of entity you are talking about
     "ENTITY_TYPE_SPECIFIER": "ENTITY_TYPE_SPECIFIER",
@@ -21,18 +23,13 @@ LANGUAGE_PART_VALUES = {
     "BONUS_SPECIFIER": "BONUS_SPECIFIER"
 }
 
-ENTITY_TYPES = {
-  "UNIT": "UNIT",
-  "TECHNOLOGY": "TECHNOLOGY",
-  "BUILDING": "BUILDING",
-  "UPGRADE": "UPGRADE",
-}
+
 
 # ---- ENTITY SPECIFIERS -----
 # meta parts of speech that declare what type of entity you are talking about
 ENTITY_TYPE_SPECIFIERS = [
     {
-        "value": ENTITY_TYPES['BUILDING'],
+        "value": EntityType.BUILDING,
         "label": 'Building',
         "aliases": [
             "building"
@@ -42,7 +39,7 @@ ENTITY_TYPE_SPECIFIERS = [
         "language_part": LANGUAGE_PART_VALUES['ENTITY_TYPE_SPECIFIER']
     },
     {
-        "value": ENTITY_TYPES['TECHNOLOGY'],
+        "value": EntityType.TECHNOLOGY,
         "label": 'Technology',
         "aliases": [
             "technology"
@@ -53,7 +50,7 @@ ENTITY_TYPE_SPECIFIERS = [
         "language_part": LANGUAGE_PART_VALUES['ENTITY_TYPE_SPECIFIER']
     },
     {
-        "value": ENTITY_TYPES['UNIT'],
+        "value": EntityType.UNIT,
         "label": 'Unit',
         "aliases": [
             "unit"
@@ -62,7 +59,7 @@ ENTITY_TYPE_SPECIFIERS = [
         "language_part": LANGUAGE_PART_VALUES['ENTITY_TYPE_SPECIFIER']
     },
     {
-        "value": ENTITY_TYPES['UPGRADE'],
+        "value": EntityType.UPGRADE,
         "label": 'Upgrade',
         "aliases": [
             "upgrade"
@@ -518,7 +515,7 @@ UNITS = [
         "aliases": ["arb", "arbalester", "arbalest", "arblest"],
         "label": "Arbalest",
         "value": UNIT_VALUES['Arbalester'],
-        "entity_type": ENTITY_TYPES['UNIT'],
+        "entity_type": EntityType.UNIT,
         "language_part": LANGUAGE_PART_VALUES["ENTITY"],
     },
     {
@@ -527,7 +524,7 @@ UNITS = [
         ],
         "label": "Arambai",
         "value": UNIT_VALUES['Arambai'],
-        "entity_type": ENTITY_TYPES['UNIT'],
+        "entity_type": EntityType.UNIT,
         "language_part": LANGUAGE_PART_VALUES["ENTITY"],
     },
     {
@@ -539,7 +536,7 @@ UNITS = [
         ],
         "label": 'Camel Rider',
         "value": UNIT_VALUES['Camel Rider'],
-        "entity_type": ENTITY_TYPES['UNIT'],
+        "entity_type": EntityType.UNIT,
         "language_part": LANGUAGE_PART_VALUES["ENTITY"],
     },
     {
@@ -551,7 +548,7 @@ UNITS = [
         ],
         "label": "Heavy Camel Rider",
         "value": UNIT_VALUES["Heavy Camel Rider"],
-        "entity_type": ENTITY_TYPES['UNIT'],
+        "entity_type": EntityType.UNIT,
         "language_part": LANGUAGE_PART_VALUES["ENTITY"],
     },
     {
@@ -563,7 +560,7 @@ UNITS = [
             "cam archer",
             "cam arch",
         ],
-        "entity_type": ENTITY_TYPES["UNIT"],
+        "entity_type": EntityType.UNIT,
         "language_part": LANGUAGE_PART_VALUES['ENTITY'],
     },
     {
@@ -574,7 +571,7 @@ UNITS = [
             "el camel archer",
             "el cam arch",
         ],
-        "entity_type": ENTITY_TYPES["UNIT"],
+        "entity_type": EntityType.UNIT,
         "language_part": LANGUAGE_PART_VALUES['ENTITY'],
     }
 ]
@@ -887,14 +884,14 @@ TECHS = [
         "value": TECH_VALUES['Anarchy'],
         'label': 'Anarchy',
         'aliases': ['anarchy'],
-        "entity_type": ENTITY_TYPES["TECHNOLOGY"],
+        "entity_type": EntityType.TECHNOLOGY,
         "language_part": LANGUAGE_PART_VALUES["ENTITY"]
     },
     {
         "value": TECH_VALUES['Loom'],
         'label': 'Loom',
         'aliases': ['loom'],
-        "entity_type": ENTITY_TYPES["TECHNOLOGY"],
+        "entity_type": EntityType.TECHNOLOGY,
         "language_part": LANGUAGE_PART_VALUES["ENTITY"],
     },
     {
@@ -911,7 +908,7 @@ TECHS = [
             'first infantry attack tech',
             'first cavalry attack tech',
         ],
-        "entity_type": ENTITY_TYPES["TECHNOLOGY"],
+        "entity_type": EntityType.TECHNOLOGY,
         "language_part": LANGUAGE_PART_VALUES["ENTITY"],
     },
 ]
@@ -1025,7 +1022,7 @@ UPGRADES = [
             "xbows",
             "first archer",
         ],
-        "entity_type": ENTITY_TYPES["UPGRADE"],
+        "entity_type": EntityType.UPGRADE,
         "language_part": LANGUAGE_PART_VALUES['ENTITY'],
     },
     {
@@ -1041,7 +1038,7 @@ UPGRADES = [
             "first crossbowmen",
             "first xbow",
         ],
-        "entity_type": ENTITY_TYPES["UPGRADE"],
+        "entity_type": EntityType.UPGRADE,
         "language_part": LANGUAGE_PART_VALUES['ENTITY'],
     },
     {
@@ -1053,7 +1050,7 @@ UPGRADES = [
             'first camel rider',
             'first camel',
         ],
-        "entity_type": ENTITY_TYPES["UPGRADE"],
+        "entity_type": EntityType.UPGRADE,
         "language_part": LANGUAGE_PART_VALUES['ENTITY'],
     },
     {
@@ -1063,7 +1060,7 @@ UPGRADES = [
             "elite camel archer",
             "el camel archer",
         ],
-        "entity_type": ENTITY_TYPES["UPGRADE"],
+        "entity_type": EntityType.UPGRADE,
         "language_part": LANGUAGE_PART_VALUES['ENTITY'],
     }
 ]
@@ -1113,7 +1110,7 @@ BUILDINGS = [
             'archery range',
             'range'
         ],
-        "entity_type": ENTITY_TYPES['BUILDING'],
+        "entity_type": EntityType.BUILDING,
         "language_part": LANGUAGE_PART_VALUES['ENTITY'],
     },
     {
@@ -1125,7 +1122,7 @@ BUILDINGS = [
             'smith',
             'blocksmith'
         ],
-        "entity_type": ENTITY_TYPES['BUILDING'],
+        "entity_type": EntityType.BUILDING,
         "language_part": LANGUAGE_PART_VALUES['ENTITY'],
 
     },
@@ -1139,7 +1136,7 @@ BUILDINGS = [
             'fort',
             'palace',
         ],
-        "entity_type": ENTITY_TYPES['BUILDING'],
+        "entity_type": EntityType.BUILDING,
         "language_part": LANGUAGE_PART_VALUES['ENTITY'],
 
     },
@@ -1154,7 +1151,7 @@ BUILDINGS = [
             'tow',
             'watch tow'
         ],
-        "entity_type": ENTITY_TYPES['BUILDING'],
+        "entity_type": EntityType.BUILDING,
         "language_part": LANGUAGE_PART_VALUES['ENTITY'],
     },
 ]
